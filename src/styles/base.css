@@ -1,0 +1,45 @@
+:root {
+  --ds-font-family-sans: Pretendard, "Noto Sans KR", Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ds-fill-neutral-canvas: #0f1013;
+  --ds-fill-neutral-panel: #1c1d22;
+  --ds-fill-neutral-card: #212329;
+  --ds-fill-neutral-card-alt: #17181c;
+  --ds-fill-neutral-control: #252831;
+  --ds-fill-neutral-control-hover: #2d303a;
+  --ds-text-neutral-primary: #f5f6f8;
+  --ds-text-neutral-secondary: #d4d8e2;
+  --ds-text-neutral-muted: #a7adbb;
+  --ds-border-neutral-subtle: #343945;
+  --ds-border-neutral-default: #424856;
+  --ds-color-teal-500: #14b8a6;
+  --ds-color-teal-600: #0f9488;
+  --ds-brand-soft: color-mix(in srgb, var(--ds-color-teal-600) 54%, var(--ds-fill-neutral-control));
+  color: var(--ds-text-neutral-primary);
+  background: var(--ds-fill-neutral-canvas);
+  font-family: Pretendard, Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+  background: var(--ds-fill-neutral-canvas);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: var(--ds-fill-neutral-canvas);
+}

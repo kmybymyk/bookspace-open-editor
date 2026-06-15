@@ -1,0 +1,121 @@
+.top-bar {
+  display: grid;
+  grid-template-columns: 344px minmax(220px, 1fr) minmax(410px, auto);
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--ds-border-neutral-subtle);
+  background: var(--ds-fill-neutral-panel);
+}
+
+.brand-block,
+.top-actions,
+.pane-heading,
+.chapter-row {
+  display: flex;
+  align-items: center;
+}
+
+.brand-block {
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--ds-color-teal-500) 38%, var(--ds-border-neutral-default));
+  border-radius: 7px;
+  color: #d4fffa;
+  background: color-mix(in srgb, var(--ds-color-teal-600) 24%, var(--ds-fill-neutral-control));
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.brand-name,
+.project-name {
+  margin: 0;
+}
+
+.brand-name {
+  color: var(--ds-text-neutral-secondary);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.project-name,
+.top-status {
+  color: var(--ds-text-neutral-muted);
+  font-size: 12px;
+}
+
+.top-status {
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-status.active {
+  color: #d7f6ff;
+  font-weight: 700;
+}
+
+.top-actions {
+  justify-content: flex-end;
+  gap: 6px;
+  border: 1px solid var(--ds-border-neutral-subtle);
+  border-radius: 8px;
+  background: var(--ds-fill-neutral-card-alt);
+  padding: 4px;
+}
+
+.ghost-button,
+.primary-button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition:
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    transform 120ms ease;
+}
+
+.ghost-button {
+  color: var(--ds-text-neutral-muted);
+  background: transparent;
+}
+
+.ghost-button:hover {
+  color: var(--ds-text-neutral-secondary);
+  background: var(--ds-fill-neutral-control);
+}
+
+.primary-button {
+  color: #ffffff;
+  border-color: color-mix(in srgb, var(--ds-color-teal-500) 35%, var(--ds-border-neutral-default));
+  background: var(--ds-brand-soft);
+}
+
+.primary-button:hover {
+  background: color-mix(in srgb, var(--ds-color-teal-500) 56%, var(--ds-fill-neutral-control-hover));
+}
+
+.primary-button:disabled,
+.primary-button[aria-disabled="true"] {
+  opacity: 0.52;
+  background: var(--ds-fill-neutral-control);
+}

@@ -1,0 +1,23 @@
+.workspace-grid {
+  display: grid;
+  grid-template-columns: 344px minmax(520px, 1fr) 320px;
+  height: calc(100vh - 52px);
+}
+
+.left-pane,
+.right-pane {
+  overflow: auto;
+  border-color: var(--ds-border-neutral-subtle);
+  background: var(--ds-fill-neutral-panel);
+  color: var(--ds-text-neutral-primary);
+}
+
+.left-pane {
+  border-right: 1px solid var(--ds-border-neutral-subtle);
+  padding: 0 0 24px;
+}
+
+.right-pane {
+  border-left: 1px solid var(--ds-border-neutral-subtle);
+  padding: 16px;
+}

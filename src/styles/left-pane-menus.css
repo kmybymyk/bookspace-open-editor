@@ -1,0 +1,90 @@
+.convert-menu {
+  grid-template-columns: 1fr;
+  gap: 8px;
+  width: 236px;
+  padding: 8px;
+}
+
+.convert-menu-help {
+  border: 1px solid var(--ds-border-neutral-subtle);
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: var(--ds-text-neutral-muted);
+  background: var(--ds-fill-neutral-control);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.convert-menu-scroll {
+  display: grid;
+  gap: 4px;
+  max-height: min(360px, calc(100vh - 180px));
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.convert-menu-group {
+  display: grid;
+  gap: 2px;
+}
+
+.convert-menu-group.divided {
+  margin-top: 6px;
+  border-top: 1px solid var(--ds-border-neutral-default);
+  padding-top: 7px;
+}
+
+.convert-menu-title {
+  padding: 0 8px 3px;
+  color: var(--ds-text-neutral-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.chapter-action-menu .convert-menu-item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
+  gap: 6px;
+  width: 100%;
+  height: auto;
+  min-height: 50px;
+  padding: 7px 8px;
+  text-align: left;
+}
+
+.convert-menu-check {
+  display: inline-flex;
+  min-height: 16px;
+  align-items: center;
+  justify-content: center;
+  color: #7dd3fc;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.convert-menu-label,
+.convert-menu-description {
+  display: block;
+}
+
+.convert-menu-label {
+  color: var(--ds-text-neutral-secondary);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.convert-menu-description {
+  margin-top: 3px;
+  color: var(--ds-text-neutral-muted);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.move-menu {
+  grid-template-columns: 1fr;
+  width: 88px;
+}

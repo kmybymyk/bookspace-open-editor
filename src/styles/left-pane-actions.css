@@ -1,0 +1,109 @@
+.chapter-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding-right: 8px;
+}
+
+.chapter-actions button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  padding: 0;
+  color: var(--ds-text-neutral-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.chapter-actions button svg {
+  display: block;
+}
+
+.chapter-actions button:first-child {
+  border: 1px solid var(--ds-border-neutral-default);
+  background: var(--ds-fill-neutral-control);
+}
+
+.chapter-actions button:hover {
+  color: var(--ds-text-neutral-secondary);
+  background: var(--ds-fill-neutral-control-hover);
+}
+
+.chapter-actions button[title="드래그"] {
+  cursor: grab;
+  touch-action: none;
+}
+
+.chapter-actions button[title="드래그"]:active {
+  cursor: grabbing;
+}
+
+.chapter-actions button:disabled {
+  color: #7dd3fc;
+  cursor: default;
+  background: color-mix(in srgb, #0284c7 46%, var(--ds-fill-neutral-control));
+}
+
+.chapter-action-menu {
+  position: absolute;
+  z-index: 4;
+  top: 34px;
+  right: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(62px, 1fr));
+  gap: 4px;
+  width: 136px;
+  border: 1px solid var(--ds-border-neutral-default);
+  border-radius: 8px;
+  padding: 6px;
+  background: var(--ds-fill-neutral-card);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.34);
+}
+
+.drag-preview {
+  position: fixed;
+  z-index: 300;
+  display: grid;
+  width: 218px;
+  min-height: 58px;
+  pointer-events: none;
+  transform: translate(14px, 10px);
+  border: 1px solid color-mix(in srgb, #7dd3fc 76%, var(--ds-border-neutral-default));
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--ds-text-neutral-secondary);
+  background: color-mix(in srgb, #143442 88%, var(--ds-fill-neutral-card));
+  box-shadow: 0 18px 40px rgb(0 0 0 / 34%);
+}
+
+.drag-preview-title {
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 850;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.drag-preview-subtitle {
+  margin-top: 5px;
+  color: var(--ds-text-neutral-muted);
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.chapter-action-menu button {
+  width: auto;
+  min-width: 0;
+  height: 28px;
+  border: 1px solid transparent;
+  padding: 0 8px;
+  color: var(--ds-text-neutral-secondary);
+  font-size: 12px;
+  font-weight: 750;
+}

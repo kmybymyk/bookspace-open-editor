@@ -1,0 +1,154 @@
+.center-pane {
+  overflow: auto;
+  padding: 30px 42px;
+  border-top: 1px solid var(--ds-border-neutral-subtle);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(45, 48, 58, 0.42), transparent 34%),
+    var(--ds-fill-neutral-canvas);
+}
+
+.page-card {
+  width: min(820px, 100%);
+  min-height: calc(100vh - 112px);
+  margin: 0 auto;
+  padding: 0 68px 58px;
+  border-radius: 6px;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.34);
+}
+
+.editor-loading {
+  display: grid;
+  min-height: 620px;
+  place-items: center;
+  color: #777777;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.tone-paper {
+  background: #ffffff;
+}
+
+.tone-white {
+  background: #ffffff;
+}
+
+.tone-warm {
+  background: #fbf7ef;
+}
+
+.chapter-title-input {
+  width: 100%;
+  margin: 44px 0 30px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #171717;
+  font-family: "Iowan Old Style", "Noto Serif KR", Georgia, serif;
+  font-size: 32px;
+  font-weight: 750;
+  line-height: 1.22;
+}
+
+.editor-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin: 0 -68px;
+  padding: 12px 68px;
+  border-bottom: 1px solid rgba(20, 20, 20, 0.08);
+  background: color-mix(in srgb, #ffffff 92%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.editor-toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  padding: 2px;
+  background: #f8f8f8;
+}
+
+.editor-toolbar button {
+  display: grid;
+  width: 30px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  padding: 0;
+  color: #4b4b4b;
+  background: transparent;
+  cursor: pointer;
+}
+
+.editor-toolbar button:hover:not(:disabled) {
+  color: #171717;
+  background: #eeeeee;
+}
+
+.editor-toolbar button.active {
+  color: #0f5f75;
+  background: #dff1f6;
+  box-shadow: inset 0 0 0 1px rgba(15, 95, 117, 0.14);
+}
+
+.editor-toolbar button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.writing-surface {
+  min-height: 520px;
+  outline: 0;
+  color: #262626;
+}
+
+.writing-surface:focus {
+  outline: 0;
+}
+
+.writing-surface p {
+  margin: 0 0 1em;
+}
+
+.writing-surface h2,
+.writing-surface h3 {
+  margin: 1.35em 0 0.65em;
+  color: #171717;
+  line-height: 1.32;
+}
+
+.writing-surface h2 {
+  font-size: 1.35em;
+}
+
+.writing-surface h3 {
+  font-size: 1.14em;
+}
+
+.writing-surface ul,
+.writing-surface ol {
+  margin: 0 0 1em;
+  padding-left: 1.45em;
+}
+
+.writing-surface blockquote {
+  margin: 1.2em 0;
+  border-left: 3px solid #b9c3c9;
+  padding-left: 1em;
+  color: #4a4a4a;
+}
+
+.writing-surface hr {
+  width: 35%;
+  margin: 2em auto;
+  border: 0;
+  border-top: 1px solid #cfcfcf;
+}

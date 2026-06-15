@@ -1,0 +1,16 @@
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "@fontsource/gowun-batang/400.css";
+import "@fontsource/gowun-dodum/400.css";
+import { App } from "./App";
+import "./styles.css";
+
+const rootElement = document.getElementById("root");
+
+if (rootElement !== null) {
+  ReactDOM.createRoot(rootElement).render(
+    <React.StrictMode>
+      <App />
+    </React.StrictMode>,
+  );
+}

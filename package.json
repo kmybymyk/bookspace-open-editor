@@ -1,7 +1,7 @@
 {
   "name": "bookspace-open-editor",
   "version": "0.1.0",
-  "description": "Open web editor for lightweight BookSpace EPUB authoring workflows.",
+  "description": "Open-source EPUB web editor for lightweight BookSpace authoring workflows.",
   "private": true,
   "license": "Apache-2.0",
   "repository": {
@@ -15,6 +15,10 @@
   "keywords": [
     "bookspace",
     "epub",
+    "epub-editor",
+    "web-epub-editor",
+    "open-source-epub-editor",
+    "ebook-editor",
     "editor",
     "react",
     "vite"

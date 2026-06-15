@@ -31,9 +31,12 @@ Current automated coverage includes:
 - right inspector tab keyboard pattern
 - EPUB readiness blocking
 - project save feedback
+- valid project import success path
 - malformed project import feedback
 - oversized project and Markdown import blocking
+- Markdown file import success path
 - Markdown import parsing
+- EPUB export success path after required metadata is complete
 - local snapshot parsing and recovery
 - EPUB package files
 - EPUB section ordering

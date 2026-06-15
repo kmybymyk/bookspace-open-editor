@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { App } from "./App";
+import { createStarterProject, serializeProjectFile } from "./domain/project";
 import { LEGACY_LOCALE_STORAGE_KEY, LOCALE_STORAGE_KEY } from "./i18nLocale";
 
 function setNavigatorLanguages(languages: readonly string[]) {
@@ -8,6 +9,16 @@ function setNavigatorLanguages(languages: readonly string[]) {
     configurable: true,
     value: languages,
   });
+}
+
+function fileInputTarget(file: File) {
+  return {
+    files: {
+      0: file,
+      item: (index: number) => (index === 0 ? file : null),
+      length: 1,
+    },
+  };
 }
 
 describe("BookSpace Web editor", () => {
@@ -248,6 +259,57 @@ describe("BookSpace Web editor", () => {
     expect(screen.getByRole("status")).toHaveTextContent(".bksp");
   });
 
+  it("opens a valid project file and replaces the current project", async () => {
+    render(<App />);
+    const fileInput = document.querySelector('input[accept=".bksp,application/json"]');
+    if (!(fileInput instanceof HTMLInputElement)) {
+      throw new Error("프로젝트 파일 입력을 찾을 수 없습니다.");
+    }
+    const project = {
+      ...createStarterProject(),
+      metadata: {
+        ...createStarterProject().metadata,
+        author: "불러온 저자",
+        title: "불러온 프로젝트",
+      },
+    };
+    const file = new File([serializeProjectFile(project)], "loaded-project.bksp", { type: "application/json" });
+
+    fireEvent.change(fileInput, { target: fileInputTarget(file) });
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("프로젝트 불러옴 · loaded-project.bksp"));
+    expect(screen.getByDisplayValue("불러온 프로젝트")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("불러온 저자")).toBeInTheDocument();
+  });
+
+  it("imports a Markdown file into chapters", async () => {
+    render(<App />);
+    const markdownInput = document.querySelector('input[accept=".md,.markdown,text/markdown,text/plain"]');
+    if (!(markdownInput instanceof HTMLInputElement)) {
+      throw new Error("Markdown 파일 입력을 찾을 수 없습니다.");
+    }
+    const file = new File(["# QA 원고\n\n첫 문단\n\n# 두 번째 장\n\n- 항목"], "draft.md", { type: "text/markdown" });
+
+    fireEvent.change(markdownInput, { target: fileInputTarget(file) });
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Markdown 불러옴 · draft.md"));
+    expect(screen.getByLabelText("제목")).toHaveValue("QA 원고");
+    expect(screen.getByLabelText("챕터 제목")).toHaveValue("QA 원고");
+    expect(screen.getByRole("button", { name: /두 번째 장 챕터\(본문\)/i })).toBeInTheDocument();
+  });
+
+  it("exports an EPUB after required metadata is complete", async () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("저자"), {
+      target: { value: "김작가" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "EPUB 내보내기" }));
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("EPUB 생성됨"));
+    expect(screen.getByRole("status")).toHaveTextContent(".epub");
+  });
+
   it("shows feedback when a project file cannot be opened", async () => {
     render(<App />);
     const fileInput = document.querySelector('input[accept=".bksp,application/json"]');
@@ -256,15 +318,7 @@ describe("BookSpace Web editor", () => {
     }
     const file = new File(["not-json"], "broken.bksp", { type: "application/json" });
 
-    fireEvent.change(fileInput, {
-      target: {
-        files: {
-          0: file,
-          item: (index: number) => (index === 0 ? file : null),
-          length: 1,
-        },
-      },
-    });
+    fireEvent.change(fileInput, { target: fileInputTarget(file) });
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("프로젝트 파일을 읽을 수 없습니다."));
   });
@@ -277,15 +331,7 @@ describe("BookSpace Web editor", () => {
     }
     const file = new File(["x".repeat(5 * 1024 * 1024 + 1)], "huge.bksp", { type: "application/json" });
 
-    fireEvent.change(fileInput, {
-      target: {
-        files: {
-          0: file,
-          item: (index: number) => (index === 0 ? file : null),
-          length: 1,
-        },
-      },
-    });
+    fireEvent.change(fileInput, { target: fileInputTarget(file) });
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("프로젝트 파일은 5MB 이하만 불러올 수 있습니다."));
   });
@@ -298,15 +344,7 @@ describe("BookSpace Web editor", () => {
     }
     const file = new File(["x".repeat(2 * 1024 * 1024 + 1)], "huge.md", { type: "text/markdown" });
 
-    fireEvent.change(markdownInput, {
-      target: {
-        files: {
-          0: file,
-          item: (index: number) => (index === 0 ? file : null),
-          length: 1,
-        },
-      },
-    });
+    fireEvent.change(markdownInput, { target: fileInputTarget(file) });
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Markdown 파일은 2MB 이하만 불러올 수 있습니다."));
   });

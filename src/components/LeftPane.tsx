@@ -143,7 +143,7 @@ export function LeftPane({
                           type="button"
                           onClick={() => onSelectChapter(chapter.id)}
                         >
-                          {isChild ? <CornerDownRight size={16} strokeWidth={1.9} /> : section === "chapter" ? <ChevronDown size={17} /> : null}
+                          {isChild ? <CornerDownRight size={16} strokeWidth={1.9} /> : section === "chapter" ? <ChevronDown size={17} /> : <span className="chapter-select-spacer" aria-hidden="true" />}
                           <span className="chapter-copy">
                             <span className="chapter-title-line">
                               <span className="chapter-title-text">{chapter.title}</span>

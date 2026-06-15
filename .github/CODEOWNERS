@@ -1,0 +1,13 @@
+# Default maintainers for the open web editor.
+* @kmybymyk
+
+# EPUB export and project file compatibility require maintainer review.
+/src/export/ @kmybymyk
+/src/domain/project.ts @kmybymyk
+/src/storage/ @kmybymyk
+
+# Governance and CI changes require maintainer review.
+/.github/ @kmybymyk
+/LICENSE @kmybymyk
+/NOTICE @kmybymyk
+/SECURITY.md @kmybymyk

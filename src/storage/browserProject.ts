@@ -1,5 +1,6 @@
 import type { ProjectFile } from "../domain/project";
 import { ProjectParseError, createStarterProject, parseProjectFile, serializeProjectFile } from "../domain/project";
+import { trackEditorEvent } from "../analytics";
 
 const AUTOSAVE_KEY = "bookspace-web:autosave:v1";
 const SNAPSHOTS_KEY = "bookspace-web:snapshots:v1";
@@ -133,6 +134,7 @@ export function writeSnapshot(project: ProjectFile, reason: SnapshotReason): Pro
 
 export function downloadBlob(blob: Blob, fileName: string): boolean {
   if (typeof URL.createObjectURL !== "function") {
+    trackEditorEvent("editor_file_download", { download_supported: false, file_type: fileTypeFromName(fileName) });
     return false;
   }
   const url = URL.createObjectURL(blob);
@@ -142,11 +144,17 @@ export function downloadBlob(blob: Blob, fileName: string): boolean {
     anchor.download = fileName;
     document.body.append(anchor);
     anchor.click();
+    trackEditorEvent("editor_file_download", { download_supported: true, file_type: fileTypeFromName(fileName) });
     return true;
   } finally {
     anchor.remove();
     URL.revokeObjectURL(url);
   }
+}
+
+function fileTypeFromName(fileName: string): string {
+  const extension = fileName.split(".").pop();
+  return extension === "epub" || extension === "bksp" ? extension : "unknown";
 }
 
 export function projectFileName(project: ProjectFile): string {

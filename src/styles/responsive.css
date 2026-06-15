@@ -95,7 +95,7 @@
   }
 
   .chapter-row {
-    grid-template-columns: minmax(0, 1fr) 168px;
+    grid-template-columns: minmax(0, 1fr) 106px;
     min-height: 58px;
     border-radius: 9px;
   }

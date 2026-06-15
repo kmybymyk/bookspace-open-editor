@@ -35,9 +35,13 @@ export function writeStoredLocale(storage: Storage, locale: Locale): void {
   }
 }
 
-export function initialLocaleFromEnvironment(search: string, storage: Storage, languages: readonly string[]): Locale {
+export function localeFromPathname(pathname: string): Locale | null {
+  return pathname === "/en/editor/" || pathname === "/en/editor" ? "en" : null;
+}
+
+export function initialLocaleFromEnvironment(search: string, pathname: string, storage: Storage, languages: readonly string[]): Locale {
   const queryLocale = localeFromValue(new URLSearchParams(search).get("lang"));
-  return queryLocale ?? readStoredLocale(storage) ?? localeFromBrowserLanguages(languages);
+  return queryLocale ?? localeFromPathname(pathname) ?? readStoredLocale(storage) ?? localeFromBrowserLanguages(languages);
 }
 
 function isRecoverableStorageError(error: unknown): boolean {

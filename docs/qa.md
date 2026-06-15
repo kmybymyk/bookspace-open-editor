@@ -22,7 +22,7 @@ Current automated coverage includes:
 - BookSpace Web project version serialization
 - legacy project file and local storage fallback
 - chapter add/delete/reorder
-- keyboard-accessible page move controls
+- compact structure row actions
 - page type menu
 - drag preview
 - metadata editing
@@ -69,7 +69,7 @@ Verify:
 - EPUB export shows `.epub` feedback
 - page type menu shows 19 options
 - changing a page type moves it to the expected section
-- structure move up/down buttons reorder pages and announce the move
+- drag handles reorder pages with a visible drop indicator
 - right inspector design tab opens
 - right inspector version tab opens
 - right inspector tabs respond to arrow keys

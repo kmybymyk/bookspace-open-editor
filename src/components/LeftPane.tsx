@@ -1,8 +1,9 @@
 import type { PointerEvent } from "react";
 import { useState } from "react";
-import { ChevronDown, CircleHelp, CornerDownRight, GripVertical, ListTree, Plus, Trash2, ArrowDown, ArrowUp } from "lucide-react";
+import { ChevronDown, CircleHelp, CornerDownRight, GripVertical, ListTree, Plus, Trash2 } from "lucide-react";
 import type { Chapter, ChapterKind, ChapterType } from "../domain/project";
 import type { AppCopy } from "../i18n";
+import { trackEditorEvent } from "../analytics";
 import { DragPreview } from "./DragPreview";
 import { CHAPTER_TYPE_GROUPS, SECTION_ORDER, chapterKind, groupChapters } from "./structureOptions";
 
@@ -18,7 +19,6 @@ type LeftPaneProps = {
   readonly onAddChapter: (type: ChapterType) => void;
   readonly onChangeChapterType: (chapterId: string, type: ChapterType, kind: ChapterKind) => void;
   readonly onDeleteChapter: (chapterId: string) => void;
-  readonly onMoveChapter: (chapterId: string, direction: "up" | "down") => boolean;
   readonly onReorderChapter: (draggedChapterId: string, targetChapterId: string, position: "before" | "after") => void;
   readonly onSelectChapter: (chapterId: string) => void;
 };
@@ -30,7 +30,6 @@ export function LeftPane({
   onAddChapter,
   onChangeChapterType,
   onDeleteChapter,
-  onMoveChapter,
   onReorderChapter,
   onSelectChapter,
 }: LeftPaneProps) {
@@ -38,7 +37,6 @@ export function LeftPane({
   const [draggedChapterId, setDraggedChapterId] = useState<string | null>(null);
   const [dragPreviewPoint, setDragPreviewPoint] = useState<null | { readonly x: number; readonly y: number }>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
-  const [moveAnnouncement, setMoveAnnouncement] = useState("");
 
   const closeMenu = () => setOpenMenu(null);
   const toggleMenu = (chapterId: string, kind: "type") => {
@@ -73,29 +71,23 @@ export function LeftPane({
   const handlePointerEnd = () => {
     if (draggedChapterId !== null && dropTarget !== null) {
       onReorderChapter(draggedChapterId, dropTarget.chapterId, dropTarget.position);
+      trackEditorEvent("editor_chapter_reorder", { position: dropTarget.position });
     }
     setDraggedChapterId(null);
     setDragPreviewPoint(null);
     setDropTarget(null);
-  };
-  const handleMoveChapter = (chapter: Chapter, direction: "up" | "down") => {
-    const moved = onMoveChapter(chapter.id, direction);
-    if (moved) {
-      setMoveAnnouncement(direction === "up" ? copy.movedUp(chapter.title) : copy.movedDown(chapter.title));
-    }
   };
   const draggedChapter = chapters.find((chapter) => chapter.id === draggedChapterId);
 
   return (
     <aside className="left-pane" onPointerCancel={handlePointerEnd} onPointerMove={handlePointerMove} onPointerUp={handlePointerEnd}>
       <div className="left-pane-top">
-        <button className="empty-page-button" type="button" onClick={() => onAddChapter("chapter")}>
+        <button className="empty-page-button" type="button" onClick={() => onAddChapter("chapter")} data-analytics-event="editor_chapter_add" data-analytics-param-chapter-type="chapter" data-analytics-param-placement="left_pane_top">
           <Plus size={17} strokeWidth={2.1} />
           {copy.emptyPage}
         </button>
       </div>
       <div className="structure-tree">
-        <div className="sr-only" aria-live="polite">{moveAnnouncement}</div>
         {SECTION_ORDER.map((section) => {
           const sectionChapters = groupChapters(chapters, section);
           return (
@@ -105,16 +97,14 @@ export function LeftPane({
                 <CircleHelp size={15} strokeWidth={2.1} />
               </div>
               {sectionChapters.length === 0 ? (
-                <button className="empty-section-row" type="button" onClick={() => onAddChapter(section)}>
+                <button className="empty-section-row" type="button" onClick={() => onAddChapter(section)} data-analytics-event="editor_chapter_add" data-analytics-param-chapter-type={section} data-analytics-param-placement="empty_section">
                   {copy.addPage}
                 </button>
               ) : (
                 <div className="section-page-list">
                   {sectionChapters.map((chapter, index) => {
                     const active = chapter.id === activeChapterId;
-                    const isChild = section === "chapter" && index > 0;
-                    const canMoveUp = index > 0;
-                    const canMoveDown = index < sectionChapters.length - 1;
+                    const isChild = section === "chapter" && chapter.type !== "part";
                     const selectedKind = chapterKind(chapter);
                     const rowClassName = [
                       "chapter-row",
@@ -142,6 +132,8 @@ export function LeftPane({
                           className={isChild ? "chapter-select child" : "chapter-select"}
                           type="button"
                           onClick={() => onSelectChapter(chapter.id)}
+                          data-analytics-event="editor_chapter_select"
+                          data-analytics-param-chapter-type={chapter.type}
                         >
                           {isChild ? <CornerDownRight size={16} strokeWidth={1.9} /> : section === "chapter" ? <ChevronDown size={17} /> : <span className="chapter-select-spacer" aria-hidden="true" />}
                           <span className="chapter-copy">
@@ -161,26 +153,10 @@ export function LeftPane({
                             aria-haspopup="dialog"
                             title={copy.structure}
                             onClick={() => toggleMenu(chapter.id, "type")}
+                            data-analytics-event="editor_chapter_menu_open"
+                            data-analytics-param-menu="structure"
                           >
                             <ListTree size={18} />
-                          </button>
-                          <button
-                            type="button"
-                            aria-label={`${chapter.title} ${copy.moveUp}`}
-                            disabled={!canMoveUp}
-                            title={copy.moveUp}
-                            onClick={() => handleMoveChapter(chapter, "up")}
-                          >
-                            <ArrowUp size={17} />
-                          </button>
-                          <button
-                            type="button"
-                            aria-label={`${chapter.title} ${copy.moveDown}`}
-                            disabled={!canMoveDown}
-                            title={copy.moveDown}
-                            onClick={() => handleMoveChapter(chapter, "down")}
-                          >
-                            <ArrowDown size={17} />
                           </button>
                           <button
                             type="button"
@@ -190,7 +166,7 @@ export function LeftPane({
                           >
                             <GripVertical size={18} />
                           </button>
-                          <button type="button" aria-label={`${chapter.title} ${copy.delete}`} title={copy.delete} onClick={() => onDeleteChapter(chapter.id)}>
+                          <button type="button" aria-label={`${chapter.title} ${copy.delete}`} title={copy.delete} onClick={() => onDeleteChapter(chapter.id)} data-analytics-event="editor_chapter_delete" data-analytics-param-chapter-type={chapter.type}>
                             <Trash2 size={18} />
                           </button>
                           {openMenu?.chapterId === chapter.id && openMenu.kind === "type" ? (
@@ -208,6 +184,7 @@ export function LeftPane({
                                         type="button"
                                         onClick={() => {
                                           onChangeChapterType(chapter.id, option.value, option.kind);
+                                          trackEditorEvent("editor_chapter_type_change", { target_chapter_type: option.value, target_chapter_kind: option.kind });
                                           closeMenu();
                                         }}
                                       >

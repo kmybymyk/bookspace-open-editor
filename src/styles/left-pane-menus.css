@@ -46,11 +46,13 @@
   display: grid;
   grid-template-columns: 16px minmax(0, 1fr);
   align-items: start;
+  justify-items: stretch;
   gap: 6px;
   width: 100%;
   height: auto;
   min-height: 50px;
   padding: 7px 8px;
+  place-items: start stretch;
   text-align: left;
 }
 

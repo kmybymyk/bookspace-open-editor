@@ -1,6 +1,6 @@
 .top-bar {
   display: grid;
-  grid-template-columns: 344px minmax(220px, 1fr) minmax(410px, auto);
+  grid-template-columns: 344px minmax(220px, 1fr) minmax(448px, auto);
   align-items: center;
   gap: 12px;
   height: 52px;
@@ -21,6 +21,16 @@
   min-width: 0;
 }
 
+.brand-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.brand-link:hover .brand-mark {
+  border-color: color-mix(in srgb, var(--ds-color-teal-500) 58%, var(--ds-border-neutral-default));
+  background: color-mix(in srgb, var(--ds-color-teal-600) 34%, var(--ds-fill-neutral-control-hover));
+}
+
 .brand-mark {
   display: grid;
   width: 30px;
@@ -30,8 +40,10 @@
   border-radius: 7px;
   color: #d4fffa;
   background: color-mix(in srgb, var(--ds-color-teal-600) 24%, var(--ds-fill-neutral-control));
-  font-weight: 800;
-  font-size: 14px;
+}
+
+.brand-mark svg {
+  display: block;
 }
 
 .brand-name,
@@ -138,6 +150,10 @@
 .ghost-button {
   width: 30px;
   padding: 0;
+}
+
+.source-link {
+  text-decoration: none;
 }
 
 .locale-select {

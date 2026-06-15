@@ -79,7 +79,7 @@ Pasted HTML is sanitized before insertion to remove script/style metadata, inlin
 
 ## Accessibility
 
-The structure pane supports pointer drag and keyboard-accessible move up/down buttons. Movement announcements are exposed through an offscreen live region.
+The structure pane keeps row actions compact with structure, drag, and delete controls. Pointer drag reorder uses a visible drop indicator and drag preview.
 
 The right inspector uses tablist/tab/tabpanel semantics with roving tab focus and arrow/Home/End keyboard handling. Disabled EPUB export uses the native `disabled` state until required metadata is complete.
 

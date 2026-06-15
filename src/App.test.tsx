@@ -84,18 +84,22 @@ describe("BookSpace Web editor", () => {
     expect(within(menu).getByRole("button", { name: /간지 장면 전환/i })).toBeInTheDocument();
     fireEvent.click(within(menu).getByRole("button", { name: /파트 본문에서/i }));
 
-    expect(screen.getByRole("button", { name: /Chapter 1 현재 파트/i })).toBeInTheDocument();
+    const convertedPartRow = screen.getByRole("button", { name: /Chapter 1 현재 파트/i }).closest(".chapter-row");
+    const nextChapterRow = screen.getByRole("button", { name: /Chapter 2 챕터\(본문\)/i }).closest(".chapter-row");
+    expect(convertedPartRow).not.toHaveClass("child-row");
+    expect(nextChapterRow).toHaveClass("child-row");
   });
 
-  it("moves pages with keyboard-accessible move buttons", () => {
+  it("keeps structure row actions compact", () => {
     render(<App />);
 
     const chapterOneActions = screen.getByLabelText("Chapter 1 작업");
-    fireEvent.click(within(chapterOneActions).getByRole("button", { name: "Chapter 1 아래로 이동" }));
 
-    const bodyRows = screen.getAllByRole("button", { name: /챕터\(본문\)|파트/i });
-    expect(bodyRows.map((row) => row.textContent)).toEqual(["Part 1파트", "Chapter 2챕터(본문)", "Chapter 1현재챕터(본문)"]);
-    expect(screen.getByText("Chapter 1 아래로 이동됨")).toBeInTheDocument();
+    expect(within(chapterOneActions).getByRole("button", { name: "Chapter 1 구조 변경" })).toBeInTheDocument();
+    expect(within(chapterOneActions).getByRole("button", { name: "Chapter 1 드래그" })).toBeInTheDocument();
+    expect(within(chapterOneActions).getByRole("button", { name: "Chapter 1 삭제" })).toBeInTheDocument();
+    expect(within(chapterOneActions).queryByRole("button", { name: "Chapter 1 위로 이동" })).not.toBeInTheDocument();
+    expect(within(chapterOneActions).queryByRole("button", { name: "Chapter 1 아래로 이동" })).not.toBeInTheDocument();
   });
 
   it("shows a floating preview while dragging a page", () => {
@@ -183,6 +187,16 @@ describe("BookSpace Web editor", () => {
     expect(screen.getByDisplayValue("Untitled book")).toBeInTheDocument();
     expect(screen.getByLabelText("Language")).toHaveValue("en");
     expect(screen.getByText("EPUB readiness")).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe("en");
+  });
+
+  it("can start in English from the English editor path", () => {
+    window.history.replaceState(null, "", "/en/editor/");
+
+    render(<App />);
+
+    expect(screen.getByLabelText("Interface language")).toHaveValue("en");
+    expect(screen.getByDisplayValue("Untitled book")).toBeInTheDocument();
     expect(document.documentElement.lang).toBe("en");
   });
 

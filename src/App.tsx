@@ -11,7 +11,7 @@ import { appCopy, formatMissingReadinessLabels } from "./i18n";
 import type { ProjectSnapshot } from "./storage/browserProject";
 import { downloadBlob, epubFileName, projectFileName, readAutosavedProject, readSnapshots, writeAutosavedProject, writeSnapshot } from "./storage/browserProject";
 import { FileSizeLimitError, readFileText } from "./storage/readFileText";
-import { moveChapter, nowLabel, orderChaptersForBook, reorderChapter, replaceChapter } from "./domain/projectOps";
+import { nowLabel, orderChaptersForBook, reorderChapter, replaceChapter } from "./domain/projectOps";
 import { useLocaleState } from "./useLocaleState";
 
 const MAX_PROJECT_FILE_BYTES = 5 * 1024 * 1024;
@@ -92,16 +92,6 @@ export function App() {
       chapters: reorderChapter(current.chapters, draggedChapterId, targetChapterId, position),
     }));
     setActiveChapterId(draggedChapterId);
-  };
-
-  const handleMoveChapter = (chapterId: string, direction: "up" | "down") => {
-    const nextChapters = moveChapter(project.chapters, chapterId, direction);
-    const moved = nextChapters.some((chapter, index) => chapter.id !== project.chapters[index]?.id);
-    if (moved) {
-      setProject((current) => ({ ...current, chapters: nextChapters }));
-      setActiveChapterId(chapterId);
-    }
-    return moved;
   };
 
   const handleSaveProject = () => {
@@ -243,7 +233,6 @@ export function App() {
           onAddChapter={handleNewChapter}
           onChangeChapterType={handleChangeChapterType}
           onDeleteChapter={handleDeleteChapter}
-          onMoveChapter={handleMoveChapter}
           onReorderChapter={handleReorderChapter}
           onSelectChapter={setActiveChapterId}
         />

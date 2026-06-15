@@ -99,6 +99,8 @@ export function RightInspector({
             type="button"
             role="tab"
             onClick={() => selectTab(tab.id)}
+            data-analytics-event="editor_inspector_tab_click"
+            data-analytics-param-tab={tab.id}
           >
             {tab.label}
           </button>

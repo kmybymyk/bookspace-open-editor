@@ -304,6 +304,8 @@ export const appCopy: Record<Locale, AppCopy> = {
       fontLabels: {
         "gowun-batang": "고운바탕",
         "gowun-dodum": "고운돋움",
+        "noto-sans-kr": "Noto Sans KR",
+        "noto-serif-kr": "Noto Serif KR",
         "system-sans": "시스템 고딕",
         "system-serif": "시스템 명조",
       },
@@ -499,6 +501,8 @@ export const appCopy: Record<Locale, AppCopy> = {
       fontLabels: {
         "gowun-batang": "Gowun Batang",
         "gowun-dodum": "Gowun Dodum",
+        "noto-sans-kr": "Noto Sans KR",
+        "noto-serif-kr": "Noto Serif KR",
         "system-sans": "System sans",
         "system-serif": "System serif",
       },

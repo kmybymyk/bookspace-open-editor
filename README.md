@@ -24,7 +24,7 @@ BookSpace Open Editor는 BookSpace Web 에디터입니다. 데스크톱 BookSpac
 - Markdown 가져오기
 - EPUB 3 패키지 생성
 - EPUB 구조 검증 테스트
-- 재배포 가능한 Gowun Batang, Gowun Dodum 웹폰트 포함
+- 재배포 가능한 Gowun Batang, Gowun Dodum, Noto Serif KR, Noto Sans KR 웹폰트 포함
 
 ### 오픈소스 범위
 
@@ -126,6 +126,8 @@ BookSpace Open Editor는 Apache License 2.0으로 배포됩니다. [LICENSE](LIC
 
 - Gowun Batang: OFL license, see `public/licenses/gowun-batang-OFL.txt`
 - Gowun Dodum: OFL license, see `public/licenses/gowun-dodum-OFL.txt`
+- Noto Serif KR: OFL license, see `public/licenses/noto-serif-kr-OFL.txt`
+- Noto Sans KR: OFL license, see `public/licenses/noto-sans-kr-OFL.txt`
 
 ## English
 
@@ -149,7 +151,7 @@ This repository covers the open web editor for BookSpace. It does not include th
 - Markdown import
 - EPUB 3 package generation
 - EPUB structure validation tests
-- Redistributable Gowun Batang and Gowun Dodum webfonts
+- Redistributable Gowun Batang, Gowun Dodum, Noto Serif KR, and Noto Sans KR webfonts
 
 ### Open Source Scope
 
@@ -251,3 +253,5 @@ Included webfonts:
 
 - Gowun Batang: OFL license, see `public/licenses/gowun-batang-OFL.txt`
 - Gowun Dodum: OFL license, see `public/licenses/gowun-dodum-OFL.txt`
+- Noto Serif KR: OFL license, see `public/licenses/noto-serif-kr-OFL.txt`
+- Noto Sans KR: OFL license, see `public/licenses/noto-sans-kr-OFL.txt`

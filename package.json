@@ -30,6 +30,8 @@
   "dependencies": {
     "@fontsource/gowun-batang": "^5.2.8",
     "@fontsource/gowun-dodum": "^5.2.8",
+    "@fontsource/noto-sans-kr": "^5.2.9",
+    "@fontsource/noto-serif-kr": "^5.2.9",
     "@tiptap/react": "^3.26.1",
     "@tiptap/starter-kit": "^3.26.1",
     "jszip": "^3.10.1",

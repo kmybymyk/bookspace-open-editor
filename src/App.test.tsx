@@ -151,6 +151,8 @@ describe("BookSpace Web editor", () => {
 
     expect(screen.getByLabelText("Font")).toBeInTheDocument();
     expect(screen.getByText("System serif")).toBeInTheDocument();
+    expect(screen.getByText("Noto Serif KR")).toBeInTheDocument();
+    expect(screen.getByText("Noto Sans KR")).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("tab", { name: "Versions" }));
 

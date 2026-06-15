@@ -27,10 +27,22 @@ export const FONT_OPTIONS: readonly FontOption[] = [
     value: "gowun-batang",
   },
   {
+    cssFamily: "'Noto Serif KR', serif",
+    epubFamily: "'Noto Serif KR', serif",
+    label: "Noto Serif KR",
+    value: "noto-serif-kr",
+  },
+  {
     cssFamily: "'Gowun Dodum', sans-serif",
     epubFamily: "'Gowun Dodum', sans-serif",
     label: "고운돋움",
     value: "gowun-dodum",
+  },
+  {
+    cssFamily: "'Noto Sans KR', sans-serif",
+    epubFamily: "'Noto Sans KR', sans-serif",
+    label: "Noto Sans KR",
+    value: "noto-sans-kr",
   },
 ];
 

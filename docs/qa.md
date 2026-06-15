@@ -19,19 +19,27 @@ Expected:
 Current automated coverage includes:
 
 - starter project structure
+- BookSpace Web project version serialization
+- legacy project file and local storage fallback
 - chapter add/delete/reorder
+- keyboard-accessible page move controls
 - page type menu
 - drag preview
 - metadata editing
+- browser-language locale initialization
+- manual locale persistence and legacy locale fallback
+- right inspector tab keyboard pattern
 - EPUB readiness blocking
 - project save feedback
 - malformed project import feedback
+- oversized project and Markdown import blocking
 - Markdown import parsing
 - local snapshot parsing and recovery
 - EPUB package files
 - EPUB section ordering
 - XHTML namespace and void element validity
 - unsafe chapter HTML removal
+- unsafe anchor href removal
 - unsupported cover rejection
 - structural EPUB package validation
 
@@ -58,9 +66,13 @@ Verify:
 - EPUB export shows `.epub` feedback
 - page type menu shows 19 options
 - changing a page type moves it to the expected section
+- structure move up/down buttons reorder pages and announce the move
 - right inspector design tab opens
 - right inspector version tab opens
+- right inspector tabs respond to arrow keys
+- 390px mobile width shows the editor before the structure pane
 - 390px mobile width has no horizontal overflow
+- top-level language selector follows browser language by default and persists manual changes
 - browser console has no errors
 
 ## Manual External Checks

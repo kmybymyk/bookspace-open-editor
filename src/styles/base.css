@@ -39,6 +39,21 @@ textarea {
   font: inherit;
 }
 
+:where(button, input, select, textarea, [tabindex]:not([tabindex="-1"]), [contenteditable="true"]):focus-visible {
+  outline: 2px solid #7dd3fc;
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  overflow: hidden;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
 .app-shell {
   min-height: 100vh;
   background: var(--ds-fill-neutral-canvas);

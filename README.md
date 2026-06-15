@@ -4,7 +4,7 @@
 
 ## 한국어
 
-BookSpace Open Editor는 BookSpace Lite 웹 에디터입니다. 데스크톱 BookSpace의 구조 편집 흐름을 웹에서 가볍게 사용할 수 있도록 만든 React/Vite 앱입니다.
+BookSpace Open Editor는 BookSpace Web 에디터입니다. 데스크톱 BookSpace의 구조 편집 흐름을 웹에서 가볍게 사용할 수 있도록 만든 React/Vite 앱입니다.
 
 브라우저 로컬 저장소에 프로젝트를 자동 저장하고, `.bksp` 프로젝트 파일과 EPUB 파일을 내보냅니다.
 
@@ -18,6 +18,8 @@ BookSpace Open Editor는 BookSpace Lite 웹 에디터입니다. 데스크톱 Boo
 - 웹/문서 붙여넣기 HTML 정리
 - 책 정보, 표지, 디자인 설정 패널
 - 로컬 스냅샷 복원
+- 브라우저 언어 기반 한국어/영어 UI와 수동 언어 전환
+- 모바일 폭에서 에디터 우선 배치와 가로 overflow 방지
 - `.bksp` 프로젝트 저장/불러오기
 - Markdown 가져오기
 - EPUB 3 패키지 생성
@@ -102,14 +104,15 @@ npm run preview -- --host 127.0.0.1 --port 4173
 - [QA Checklist](docs/qa.md)
 - [Deployment](docs/deployment.md)
 - [EPUB Export](docs/epub-export.md)
+- [Project Format](docs/project-format.md)
 
 ### 로드맵
 
 - 외부 validator와 reader 기준 EPUB 호환성 개선
-- Lite 흐름을 유지하면서 에디터 formatting controls 확장
+- 웹 에디터 흐름을 유지하면서 에디터 formatting controls 확장
 - import/export regression fixture 보강
 - 키보드 내비게이션과 접근성 개선
-- `.bksp` 프로젝트 포맷 문서화 강화
+- 외부 기여자가 다루기 쉬운 import/export fixture 보강
 
 ### 기여
 
@@ -126,7 +129,7 @@ BookSpace Open Editor는 Apache License 2.0으로 배포됩니다. [LICENSE](LIC
 
 ## English
 
-BookSpace Open Editor is the BookSpace Lite web editor. It is a React/Vite app that brings the structural editing flow of the desktop BookSpace app to a lightweight browser-based workspace.
+BookSpace Open Editor is the BookSpace Web editor. It is a React/Vite app that brings the structural editing flow of the desktop BookSpace app to a lightweight browser-based workspace.
 
 Projects are autosaved in browser local storage, and the editor can export `.bksp` project files and EPUB files.
 
@@ -140,6 +143,8 @@ This repository covers the open web editor for BookSpace. It does not include th
 - Cleaned HTML paste from web and document sources
 - Book metadata, cover, and design settings panels
 - Local snapshot restore
+- Browser-language Korean/English UI with manual language switching
+- Editor-first mobile layout with horizontal overflow checks
 - `.bksp` project save/load
 - Markdown import
 - EPUB 3 package generation
@@ -224,14 +229,15 @@ Pre-deploy checks:
 - [QA Checklist](docs/qa.md)
 - [Deployment](docs/deployment.md)
 - [EPUB Export](docs/epub-export.md)
+- [Project Format](docs/project-format.md)
 
 ### Roadmap
 
 - Improve EPUB compatibility with external validators and readers
-- Expand editor formatting controls while keeping the Lite workflow simple
+- Expand editor formatting controls while keeping the web editor workflow simple
 - Add stronger import/export regression fixtures
 - Improve keyboard navigation and accessibility
-- Document the `.bksp` project format more formally
+- Add stronger import/export fixtures for external contributors
 
 ### Contributing
 

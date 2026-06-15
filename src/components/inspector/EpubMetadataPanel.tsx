@@ -1,10 +1,12 @@
 import type { BookMetadata } from "../../domain/project";
+import type { AppCopy } from "../../i18n";
 
 const IDENTIFIER_TYPES = ["uuid", "isbn", "issn", "asin", "doi"] as const;
 
 type IdentifierType = NonNullable<BookMetadata["identifierType"]>;
 
 type EpubMetadataPanelProps = {
+  readonly copy: AppCopy["metadata"];
   readonly metadata: BookMetadata;
   readonly onMetadataChange: (metadata: BookMetadata) => void;
 };
@@ -13,53 +15,57 @@ function isIdentifierType(value: string): value is IdentifierType {
   return IDENTIFIER_TYPES.some((identifierType) => identifierType === value);
 }
 
-export function EpubMetadataPanel({ metadata, onMetadataChange }: EpubMetadataPanelProps) {
+export function EpubMetadataPanel({ copy, metadata, onMetadataChange }: EpubMetadataPanelProps) {
   return (
     <section className="inspector-section">
-      <h2>책 정보</h2>
+      <h2>{copy.sectionTitle}</h2>
       <label>
-        제목
+        {copy.title}
         <input
           value={metadata.title}
+          placeholder={copy.titlePlaceholder}
           onChange={(event) => onMetadataChange({ ...metadata, title: event.currentTarget.value })}
         />
       </label>
       <label>
-        부제
+        {copy.subtitle}
         <input
           value={metadata.subtitle}
+          placeholder={copy.subtitlePlaceholder}
           onChange={(event) => onMetadataChange({ ...metadata, subtitle: event.currentTarget.value })}
         />
       </label>
       <label>
-        저자
+        {copy.author}
         <input
           value={metadata.author}
+          placeholder={copy.authorPlaceholder}
           onChange={(event) => onMetadataChange({ ...metadata, author: event.currentTarget.value })}
         />
       </label>
       <label>
-        언어
+        {copy.language}
         <select
           value={metadata.language}
           onChange={(event) => onMetadataChange({ ...metadata, language: event.currentTarget.value })}
         >
-          <option value="ko">한국어</option>
-          <option value="en">English</option>
-          <option value="ja">日本語</option>
-          <option value="zh-Hans">中文(简体)</option>
-          <option value="zh-Hant">中文(繁體)</option>
+          <option value="ko">{copy.languageOptions.ko}</option>
+          <option value="en">{copy.languageOptions.en}</option>
+          <option value="ja">{copy.languageOptions.ja}</option>
+          <option value="zh-Hans">{copy.languageOptions.zhHans}</option>
+          <option value="zh-Hant">{copy.languageOptions.zhHant}</option>
         </select>
       </label>
       <label>
-        출판사
+        {copy.publisher}
         <input
           value={metadata.publisher}
+          placeholder={copy.publisherPlaceholder}
           onChange={(event) => onMetadataChange({ ...metadata, publisher: event.currentTarget.value })}
         />
       </label>
       <label>
-        발행일
+        {copy.publishDate}
         <input
           type="date"
           value={metadata.publishDate ?? ""}
@@ -67,7 +73,7 @@ export function EpubMetadataPanel({ metadata, onMetadataChange }: EpubMetadataPa
         />
       </label>
       <label>
-        식별자
+        {copy.identifier}
         <span className="inline-field-grid">
           <select
             value={metadata.identifierType ?? "uuid"}
@@ -86,16 +92,17 @@ export function EpubMetadataPanel({ metadata, onMetadataChange }: EpubMetadataPa
           </select>
           <input
             value={metadata.identifier ?? ""}
-            placeholder="없으면 내보낼 때 자동 생성"
+            placeholder={copy.identifierPlaceholder}
             onChange={(event) => onMetadataChange({ ...metadata, identifier: event.currentTarget.value })}
           />
         </span>
       </label>
       <label>
-        설명
+        {copy.description}
         <textarea
           rows={4}
           value={metadata.description}
+          placeholder={copy.descriptionPlaceholder}
           onChange={(event) => onMetadataChange({ ...metadata, description: event.currentTarget.value })}
         />
       </label>

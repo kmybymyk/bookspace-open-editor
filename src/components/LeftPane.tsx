@@ -1,9 +1,10 @@
 import type { PointerEvent } from "react";
 import { useState } from "react";
-import { ChevronDown, CircleHelp, CornerDownRight, GripVertical, ListTree, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, CircleHelp, CornerDownRight, GripVertical, ListTree, Plus, Trash2, ArrowDown, ArrowUp } from "lucide-react";
 import type { Chapter, ChapterKind, ChapterType } from "../domain/project";
+import type { AppCopy } from "../i18n";
 import { DragPreview } from "./DragPreview";
-import { CHAPTER_TYPE_GROUPS, SECTION_ORDER, chapterKind, chapterSubtitle, groupChapters, sectionTitle } from "./structureOptions";
+import { CHAPTER_TYPE_GROUPS, SECTION_ORDER, chapterKind, groupChapters } from "./structureOptions";
 
 type DropTarget = {
   readonly chapterId: string;
@@ -13,9 +14,11 @@ type DropTarget = {
 type LeftPaneProps = {
   readonly chapters: readonly Chapter[];
   readonly activeChapterId: string;
+  readonly copy: AppCopy["structure"];
   readonly onAddChapter: (type: ChapterType) => void;
   readonly onChangeChapterType: (chapterId: string, type: ChapterType, kind: ChapterKind) => void;
   readonly onDeleteChapter: (chapterId: string) => void;
+  readonly onMoveChapter: (chapterId: string, direction: "up" | "down") => boolean;
   readonly onReorderChapter: (draggedChapterId: string, targetChapterId: string, position: "before" | "after") => void;
   readonly onSelectChapter: (chapterId: string) => void;
 };
@@ -23,9 +26,11 @@ type LeftPaneProps = {
 export function LeftPane({
   chapters,
   activeChapterId,
+  copy,
   onAddChapter,
   onChangeChapterType,
   onDeleteChapter,
+  onMoveChapter,
   onReorderChapter,
   onSelectChapter,
 }: LeftPaneProps) {
@@ -33,6 +38,7 @@ export function LeftPane({
   const [draggedChapterId, setDraggedChapterId] = useState<string | null>(null);
   const [dragPreviewPoint, setDragPreviewPoint] = useState<null | { readonly x: number; readonly y: number }>(null);
   const [dropTarget, setDropTarget] = useState<DropTarget | null>(null);
+  const [moveAnnouncement, setMoveAnnouncement] = useState("");
 
   const closeMenu = () => setOpenMenu(null);
   const toggleMenu = (chapterId: string, kind: "type") => {
@@ -72,6 +78,12 @@ export function LeftPane({
     setDragPreviewPoint(null);
     setDropTarget(null);
   };
+  const handleMoveChapter = (chapter: Chapter, direction: "up" | "down") => {
+    const moved = onMoveChapter(chapter.id, direction);
+    if (moved) {
+      setMoveAnnouncement(direction === "up" ? copy.movedUp(chapter.title) : copy.movedDown(chapter.title));
+    }
+  };
   const draggedChapter = chapters.find((chapter) => chapter.id === draggedChapterId);
 
   return (
@@ -79,27 +91,30 @@ export function LeftPane({
       <div className="left-pane-top">
         <button className="empty-page-button" type="button" onClick={() => onAddChapter("chapter")}>
           <Plus size={17} strokeWidth={2.1} />
-          빈 페이지
+          {copy.emptyPage}
         </button>
       </div>
       <div className="structure-tree">
+        <div className="sr-only" aria-live="polite">{moveAnnouncement}</div>
         {SECTION_ORDER.map((section) => {
           const sectionChapters = groupChapters(chapters, section);
           return (
             <section className="structure-section" key={section}>
               <div className="structure-section-heading">
-                <span>{sectionTitle(section)}</span>
+                <span>{copy.sections[section]}</span>
                 <CircleHelp size={15} strokeWidth={2.1} />
               </div>
               {sectionChapters.length === 0 ? (
                 <button className="empty-section-row" type="button" onClick={() => onAddChapter(section)}>
-                  + 페이지 추가
+                  {copy.addPage}
                 </button>
               ) : (
                 <div className="section-page-list">
                   {sectionChapters.map((chapter, index) => {
                     const active = chapter.id === activeChapterId;
                     const isChild = section === "chapter" && index > 0;
+                    const canMoveUp = index > 0;
+                    const canMoveDown = index < sectionChapters.length - 1;
                     const selectedKind = chapterKind(chapter);
                     const rowClassName = [
                       "chapter-row",
@@ -122,7 +137,7 @@ export function LeftPane({
                           }
                         }}
                       >
-                        {dropTarget?.chapterId === chapter.id ? <div className="drop-target-label">여기에 놓기</div> : null}
+                        {dropTarget?.chapterId === chapter.id ? <div className="drop-target-label">{copy.dropHere}</div> : null}
                         <button
                           className={isChild ? "chapter-select child" : "chapter-select"}
                           type="button"
@@ -132,33 +147,59 @@ export function LeftPane({
                           <span className="chapter-copy">
                             <span className="chapter-title-line">
                               <span className="chapter-title-text">{chapter.title}</span>
-                              {active ? <span className="current-badge">현재</span> : null}
+                              {active ? <span className="current-badge">{copy.current}</span> : null}
                             </span>
-                            <span className="chapter-subtitle">{chapterSubtitle(chapter)}</span>
+                            <span className="chapter-subtitle">{copy.kindLabels[chapterKind(chapter)]}</span>
                           </span>
                         </button>
-                        <div className="chapter-actions" aria-label={`${chapter.title} 작업`}>
-                          <button type="button" aria-label={`${chapter.title} 구조 변경`} title="구조" onClick={() => toggleMenu(chapter.id, "type")}>
+                        <div className="chapter-actions" aria-label={`${chapter.title} ${copy.workSuffix}`}>
+                          <button
+                            type="button"
+                            aria-expanded={openMenu?.chapterId === chapter.id && openMenu.kind === "type"}
+                            aria-label={`${chapter.title} ${copy.changeStructure}`}
+                            aria-controls={`${chapter.id}-structure-menu`}
+                            aria-haspopup="dialog"
+                            title={copy.structure}
+                            onClick={() => toggleMenu(chapter.id, "type")}
+                          >
                             <ListTree size={18} />
                           </button>
                           <button
                             type="button"
-                            aria-label={`${chapter.title} 드래그로 이동`}
-                            title="드래그"
+                            aria-label={`${chapter.title} ${copy.moveUp}`}
+                            disabled={!canMoveUp}
+                            title={copy.moveUp}
+                            onClick={() => handleMoveChapter(chapter, "up")}
+                          >
+                            <ArrowUp size={17} />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={`${chapter.title} ${copy.moveDown}`}
+                            disabled={!canMoveDown}
+                            title={copy.moveDown}
+                            onClick={() => handleMoveChapter(chapter, "down")}
+                          >
+                            <ArrowDown size={17} />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={`${chapter.title} ${copy.drag}`}
+                            title={copy.drag}
                             onPointerDown={(event) => handlePointerStart(event, chapter.id)}
                           >
                             <GripVertical size={18} />
                           </button>
-                          <button type="button" aria-label={`${chapter.title} 삭제`} title="삭제" onClick={() => onDeleteChapter(chapter.id)}>
+                          <button type="button" aria-label={`${chapter.title} ${copy.delete}`} title={copy.delete} onClick={() => onDeleteChapter(chapter.id)}>
                             <Trash2 size={18} />
                           </button>
                           {openMenu?.chapterId === chapter.id && openMenu.kind === "type" ? (
-                            <div className="chapter-action-menu convert-menu" role="menu" aria-label={`${chapter.title} 구조 변경`}>
-                              <div className="convert-menu-help">페이지 종류를 바꾸면 해당 섹션으로 자동 이동합니다.</div>
+                            <div className="chapter-action-menu convert-menu" id={`${chapter.id}-structure-menu`} aria-label={`${chapter.title} ${copy.changeStructure}`}>
+                              <div className="convert-menu-help">{copy.moveToSectionHelp}</div>
                               <div className="convert-menu-scroll">
                                 {CHAPTER_TYPE_GROUPS.map((group, groupIndex) => (
-                                  <div className={groupIndex > 0 ? "convert-menu-group divided" : "convert-menu-group"} key={group.title}>
-                                    <div className="convert-menu-title">{group.title}</div>
+                                  <div className={groupIndex > 0 ? "convert-menu-group divided" : "convert-menu-group"} key={group.key}>
+                                    <div className="convert-menu-title">{copy.groupTitles[group.key]}</div>
                                     {group.items.map((option) => (
                                       <button
                                         className="convert-menu-item"
@@ -172,8 +213,8 @@ export function LeftPane({
                                       >
                                         <span className="convert-menu-check">{selectedKind === option.kind ? "✓" : ""}</span>
                                         <span>
-                                          <span className="convert-menu-label">{option.label}</span>
-                                          <span className="convert-menu-description">{option.description}</span>
+                                          <span className="convert-menu-label">{copy.kindLabels[option.kind]}</span>
+                                          <span className="convert-menu-description">{copy.kindDescriptions[option.kind]}</span>
                                         </span>
                                       </button>
                                     ))}
@@ -194,7 +235,7 @@ export function LeftPane({
       </div>
       {draggedChapter !== undefined && dragPreviewPoint !== null ? (
         <DragPreview
-          subtitle={chapterSubtitle(draggedChapter)}
+          subtitle={copy.kindLabels[chapterKind(draggedChapter)]}
           title={draggedChapter.title}
           x={dragPreviewPoint.x}
           y={dragPreviewPoint.y}

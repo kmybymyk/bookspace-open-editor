@@ -128,6 +128,24 @@ describe("EPUB export", () => {
     expect(zip.file("OEBPS/images/cover.jpg")).toBeNull();
   });
 
+  it("ignores oversized cover data URLs during export", async () => {
+    const starter = createStarterProject();
+    const project = {
+      ...starter,
+      metadata: {
+        ...starter.metadata,
+        author: "테스트 저자",
+        coverImage: `data:image/png;base64,${"A".repeat(3_000_000)}`,
+      },
+    };
+
+    const blob = await exportEpub(project);
+    const zip = await JSZip.loadAsync(blob);
+
+    expect(zip.file("OEBPS/cover.xhtml")).toBeNull();
+    expect(zip.file("OEBPS/images/cover.png")).toBeNull();
+  });
+
   it("removes unsafe chapter HTML when creating XHTML", async () => {
     const starter = createStarterProject();
     const firstChapter = starter.chapters[0];
@@ -157,5 +175,33 @@ describe("EPUB export", () => {
     expect(chapter).not.toContain("onclick");
     expect(chapter).not.toContain("javascript:");
     expect(chapter).not.toContain("onerror");
+  });
+
+  it("keeps only internal anchors and https links in exported chapter HTML", async () => {
+    const starter = createStarterProject();
+    const firstChapter = starter.chapters[0];
+    if (firstChapter === undefined) {
+      throw new Error("기본 프로젝트에 첫 페이지가 없습니다.");
+    }
+    const project = {
+      ...starter,
+      chapters: [
+        {
+          ...firstChapter,
+          contentHtml: '<p><a href="#note">내부</a><a href="https://example.com">보안 링크</a><a href="http://example.com">비보안 링크</a><a href="mailto:test@example.com">메일</a></p>',
+        },
+      ],
+    };
+
+    const blob = await exportEpub(project);
+    const zip = await JSZip.loadAsync(blob);
+    const chapter = await zip.file("OEBPS/chapters/01-front-1.xhtml")?.async("string");
+
+    expect(chapter).toContain('<a href="#note">내부</a>');
+    expect(chapter).toContain('<a href="https://example.com">보안 링크</a>');
+    expect(chapter).toContain("<a>비보안 링크</a>");
+    expect(chapter).toContain("<a>메일</a>");
+    expect(chapter).not.toContain("http://example.com");
+    expect(chapter).not.toContain("mailto:");
   });
 });

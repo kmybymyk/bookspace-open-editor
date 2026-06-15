@@ -6,17 +6,21 @@ import { importMarkdownProject } from "./import/markdown";
 import { LeftPane } from "./components/LeftPane";
 import { RightInspector } from "./components/RightInspector";
 import { TopBar } from "./components/TopBar";
-import { epubReadiness, isEpubReady, missingReadinessLabels } from "./domain/readiness";
+import { epubReadiness, isEpubReady, missingReadinessKeys } from "./domain/readiness";
+import { appCopy, formatMissingReadinessLabels } from "./i18n";
 import type { ProjectSnapshot } from "./storage/browserProject";
 import { downloadBlob, epubFileName, projectFileName, readAutosavedProject, readSnapshots, writeAutosavedProject, writeSnapshot } from "./storage/browserProject";
-import { readFileText } from "./storage/readFileText";
-import { nowLabel, orderChaptersForBook, reorderChapter, replaceChapter } from "./domain/projectOps";
+import { FileSizeLimitError, readFileText } from "./storage/readFileText";
+import { moveChapter, nowLabel, orderChaptersForBook, reorderChapter, replaceChapter } from "./domain/projectOps";
+import { useLocaleState } from "./useLocaleState";
 
-const PROJECT_FILE_ERROR_MESSAGE = "프로젝트 파일을 읽을 수 없습니다.";
+const MAX_PROJECT_FILE_BYTES = 5 * 1024 * 1024;
+const MAX_MARKDOWN_FILE_BYTES = 2 * 1024 * 1024;
 const CenterEditor = lazy(() => import("./components/CenterEditor").then((module) => ({ default: module.CenterEditor })));
 
 export function App() {
-  const [project, setProject] = useState<ProjectFile>(() => readAutosavedProject() ?? createStarterProject());
+  const [locale, setLocale] = useLocaleState();
+  const [project, setProject] = useState<ProjectFile>(() => readAutosavedProject() ?? createStarterProject(locale));
   const [activeChapterId, setActiveChapterId] = useState(project.chapters[0]?.id ?? "chapter-1");
   const [snapshots, setSnapshots] = useState<readonly ProjectSnapshot[]>(() => readSnapshots());
   const [actionNotice, setActionNotice] = useState("");
@@ -28,13 +32,19 @@ export function App() {
     [activeChapterId, project.chapters],
   );
   const readiness = useMemo(() => epubReadiness(project), [project]);
+  const copy = appCopy[locale];
   const epubReady = isEpubReady(readiness);
-  const epubDisabledReason = epubReady ? "" : `필수 항목 필요: ${missingReadinessLabels(readiness)}`;
+  const epubDisabledReason = epubReady ? "" : `${copy.topBar.requiredPrefix}: ${formatMissingReadinessLabels(copy.readiness.labels, missingReadinessKeys(readiness))}`;
 
   useEffect(() => {
     writeAutosavedProject(project);
-    setSavedAt(nowLabel());
+    setSavedAt(nowLabel(locale));
   }, [project]);
+
+  useEffect(() => {
+    setSavedAt(nowLabel(locale));
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   if (!activeChapter) {
     return null;
@@ -45,7 +55,7 @@ export function App() {
   };
 
   const handleNewChapter = (type: Chapter["type"] = "chapter") => {
-    const title = type === "front" ? "프롤로그" : type === "back" ? "에필로그" : `새 챕터 ${project.chapters.length + 1}`;
+    const title = type === "front" ? copy.structure.kindLabels.prologue : type === "back" ? copy.structure.kindLabels.epilogue : copy.structure.newChapterTitle(project.chapters.length + 1);
     const kind = type === "front" ? "prologue" : type === "back" ? "epilogue" : type === "part" ? "part" : "chapter";
     const chapter = createChapter(title, type, kind);
     setProject((current) => ({ ...current, chapters: orderChaptersForBook([...current.chapters, chapter]) }));
@@ -84,13 +94,23 @@ export function App() {
     setActiveChapterId(draggedChapterId);
   };
 
+  const handleMoveChapter = (chapterId: string, direction: "up" | "down") => {
+    const nextChapters = moveChapter(project.chapters, chapterId, direction);
+    const moved = nextChapters.some((chapter, index) => chapter.id !== project.chapters[index]?.id);
+    if (moved) {
+      setProject((current) => ({ ...current, chapters: nextChapters }));
+      setActiveChapterId(chapterId);
+    }
+    return moved;
+  };
+
   const handleSaveProject = () => {
     writeSnapshot(project, "manual");
     setSnapshots(readSnapshots());
     const fileName = projectFileName(project);
     const blob = new Blob([serializeProjectFile(project)], { type: "application/json;charset=utf-8" });
     const downloaded = downloadBlob(blob, fileName);
-    setActionNotice(downloaded ? `프로젝트 저장됨 · ${fileName} 다운로드 시작` : `프로젝트 저장됨 · ${fileName} · 현재 브라우저에서 다운로드를 지원하지 않습니다`);
+    setActionNotice(copy.notices.projectSaved(fileName, downloaded));
   };
 
   const handleOpenProject = () => {
@@ -105,20 +125,24 @@ export function App() {
     if (file === null) {
       return;
     }
-    void readFileText(file).then((raw) => {
+    void readFileText(file, { maxBytes: MAX_PROJECT_FILE_BYTES }).then((raw) => {
       const parsed = parseProjectFile(raw);
       writeSnapshot(project, "import");
       setSnapshots(readSnapshots());
       setProject(parsed);
       setActiveChapterId(parsed.chapters[0]?.id ?? "chapter-1");
-      setActionNotice(`프로젝트 불러옴 · ${file.name}`);
+      setActionNotice(copy.notices.projectLoaded(file.name));
     }).catch((error: unknown) => {
+      if (error instanceof FileSizeLimitError) {
+        setActionNotice(copy.notices.projectTooLarge);
+        return;
+      }
       if (error instanceof ProjectParseError) {
-        setActionNotice(error.message);
+        setActionNotice(copy.notices.projectFileError);
         return;
       }
       if (error instanceof Error) {
-        setActionNotice(PROJECT_FILE_ERROR_MESSAGE);
+        setActionNotice(copy.notices.projectFileError);
         return;
       }
       throw error;
@@ -129,16 +153,20 @@ export function App() {
     if (file === null) {
       return;
     }
-    void readFileText(file).then((raw) => {
+    void readFileText(file, { maxBytes: MAX_MARKDOWN_FILE_BYTES }).then((raw) => {
       const imported = importMarkdownProject(raw);
       writeSnapshot(project, "import");
       setSnapshots(readSnapshots());
       setProject(imported);
       setActiveChapterId(imported.chapters[0]?.id ?? "chapter-1");
-      setActionNotice(`Markdown 불러옴 · ${file.name}`);
+      setActionNotice(copy.notices.markdownLoaded(file.name));
     }).catch((error: unknown) => {
+      if (error instanceof FileSizeLimitError) {
+        setActionNotice(copy.notices.markdownTooLarge);
+        return;
+      }
       if (error instanceof Error) {
-        setActionNotice("Markdown 파일을 읽을 수 없습니다.");
+        setActionNotice(copy.notices.markdownReadError);
         return;
       }
       throw error;
@@ -161,27 +189,29 @@ export function App() {
       setActionNotice(epubDisabledReason);
       return;
     }
-    setActionNotice("EPUB 파일 생성 중...");
+    setActionNotice(copy.notices.epubGenerating);
     void exportEpub(project).then((blob) => {
       const fileName = epubFileName(project);
       const downloaded = downloadBlob(blob, fileName);
-      setActionNotice(downloaded ? `EPUB 생성됨 · ${fileName} 다운로드 시작` : `EPUB 생성됨 · ${fileName} · 현재 브라우저에서 다운로드를 지원하지 않습니다`);
+      setActionNotice(copy.notices.epubDone(fileName, downloaded));
     }).catch(() => {
-      setActionNotice("EPUB 생성 실패 · 필수 정보와 본문을 확인하세요.");
+      setActionNotice(copy.notices.epubFailed);
     });
   };
 
   return (
     <div className="app-shell">
       <TopBar
+        copy={copy.topBar}
         title={project.metadata.title}
         actionNotice={actionNotice}
         epubDisabledReason={epubDisabledReason}
         epubReady={epubReady}
+        locale={locale}
         savedAt={savedAt}
         onExportEpub={handleExportEpub}
         onImportMarkdown={handleImportMarkdown}
-        onNewChapter={() => handleNewChapter("chapter")}
+        onLocaleChange={setLocale}
         onOpenProject={handleOpenProject}
         onSaveProject={handleSaveProject}
       />
@@ -209,22 +239,27 @@ export function App() {
         <LeftPane
           chapters={project.chapters}
           activeChapterId={activeChapter.id}
+          copy={copy.structure}
           onAddChapter={handleNewChapter}
           onChangeChapterType={handleChangeChapterType}
           onDeleteChapter={handleDeleteChapter}
+          onMoveChapter={handleMoveChapter}
           onReorderChapter={handleReorderChapter}
           onSelectChapter={setActiveChapterId}
         />
-        <Suspense fallback={<main className="center-pane"><div className="page-card editor-loading">편집기 불러오는 중...</div></main>}>
+        <Suspense fallback={<main className="center-pane"><div className="page-card editor-loading">{copy.editor.loading}</div></main>}>
           <CenterEditor
             chapter={activeChapter}
+            copy={copy.editor}
             design={project.design}
             onContentChange={(contentHtml) => updateActiveChapter({ contentHtml })}
             onRename={(title) => updateActiveChapter({ title })}
           />
         </Suspense>
         <RightInspector
+          copy={copy}
           design={project.design}
+          locale={locale}
           metadata={project.metadata}
           readiness={readiness}
           snapshots={snapshots}

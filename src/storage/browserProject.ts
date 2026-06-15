@@ -1,8 +1,10 @@
 import type { ProjectFile } from "../domain/project";
 import { ProjectParseError, createStarterProject, parseProjectFile, serializeProjectFile } from "../domain/project";
 
-const AUTOSAVE_KEY = "bookspace-lite:autosave:v1";
-const SNAPSHOTS_KEY = "bookspace-lite:snapshots:v1";
+const AUTOSAVE_KEY = "bookspace-web:autosave:v1";
+const SNAPSHOTS_KEY = "bookspace-web:snapshots:v1";
+const LEGACY_AUTOSAVE_KEY = "bookspace-lite:autosave:v1";
+const LEGACY_SNAPSHOTS_KEY = "bookspace-lite:snapshots:v1";
 const MAX_SNAPSHOTS = 12;
 export type SnapshotReason = "manual" | "autosave" | "import";
 
@@ -21,8 +23,27 @@ function isUnknownRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
 }
 
+function isRecoverableStorageWriteError(error: unknown): boolean {
+  return error instanceof DOMException && (error.name === "QuotaExceededError" || error.name === "SecurityError");
+}
+
+function writeLocalStorage(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch (error) {
+    if (isRecoverableStorageWriteError(error)) {
+      return;
+    }
+    throw error;
+  }
+}
+
+function readLocalStorageWithFallback(key: string, legacyKey: string): string | null {
+  return window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey);
+}
+
 export function readAutosavedProject(): ProjectFile | null {
-  const raw = window.localStorage.getItem(AUTOSAVE_KEY);
+  const raw = readLocalStorageWithFallback(AUTOSAVE_KEY, LEGACY_AUTOSAVE_KEY);
   if (raw === null) {
     return null;
   }
@@ -50,11 +71,11 @@ export function readAutosavedProject(): ProjectFile | null {
 }
 
 export function writeAutosavedProject(project: ProjectFile): void {
-  window.localStorage.setItem(AUTOSAVE_KEY, serializeProjectFile(project));
+  writeLocalStorage(AUTOSAVE_KEY, serializeProjectFile(project));
 }
 
 export function readSnapshots(): readonly ProjectSnapshot[] {
-  const raw = window.localStorage.getItem(SNAPSHOTS_KEY);
+  const raw = readLocalStorageWithFallback(SNAPSHOTS_KEY, LEGACY_SNAPSHOTS_KEY);
   if (raw === null) {
     return [];
   }
@@ -106,7 +127,7 @@ export function writeSnapshot(project: ProjectFile, reason: SnapshotReason): Pro
     project,
   };
   const snapshots = [snapshot, ...readSnapshots()].slice(0, MAX_SNAPSHOTS);
-  window.localStorage.setItem(SNAPSHOTS_KEY, JSON.stringify(snapshots));
+  writeLocalStorage(SNAPSHOTS_KEY, JSON.stringify(snapshots));
   return snapshot;
 }
 

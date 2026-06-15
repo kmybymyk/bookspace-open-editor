@@ -1,7 +1,7 @@
 .chapter-row {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 104px;
+  grid-template-columns: minmax(0, 1fr) 160px;
   align-items: center;
   min-height: 62px;
   border: 1px solid transparent;

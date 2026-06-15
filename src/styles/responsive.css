@@ -42,6 +42,7 @@
 
   .top-actions {
     justify-content: flex-start;
+    flex-wrap: wrap;
   }
 
   .ghost-button,
@@ -59,27 +60,84 @@
     grid-template-columns: 1fr;
   }
 
+  .center-pane {
+    order: 1;
+  }
+
   .left-pane {
-    max-height: 55vh;
+    order: 2;
+    max-height: 46vh;
     border-right: 0;
     border-bottom: 1px solid var(--ds-border-neutral-subtle);
   }
 
+  .right-pane {
+    order: 3;
+  }
+
   .center-pane {
-    padding: 18px 12px;
+    padding: 14px 10px 18px;
   }
 
   .page-card {
-    padding: 0 22px 42px;
+    min-height: 72vh;
+    padding: 0 20px 38px;
   }
 
   .editor-toolbar {
-    margin: 0 -22px;
-    padding: 10px 22px;
+    margin: 0 -20px;
+    padding: 10px 20px;
   }
 
   .chapter-title-input {
-    margin-top: 30px;
-    font-size: 27px;
+    margin-top: 28px;
+    font-size: 26px;
+  }
+
+  .chapter-row {
+    grid-template-columns: minmax(0, 1fr) 168px;
+    min-height: 58px;
+    border-radius: 9px;
+  }
+
+  .chapter-row.child-row {
+    min-height: 60px;
+  }
+
+  .chapter-select {
+    grid-template-columns: 16px minmax(0, 1fr);
+    gap: 6px;
+    padding: 9px 4px 9px 14px;
+  }
+
+  .chapter-select.child {
+    padding-left: 36px;
+  }
+
+  .chapter-title-line {
+    gap: 6px;
+    font-size: 15px;
+  }
+
+  .chapter-title-text,
+  .chapter-subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .chapter-subtitle {
+    font-size: 13px;
+  }
+
+  .chapter-actions {
+    gap: 2px;
+    padding-right: 6px;
+  }
+
+  .chapter-actions button {
+    flex: 0 0 30px;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
   }
 }

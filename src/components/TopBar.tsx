@@ -1,12 +1,15 @@
-import { FileDown, FilePlus2, FileText, FileUp, Save } from "lucide-react";
+import { FileDown, FileText, FileUp, Languages, Save } from "lucide-react";
+import type { AppCopy, Locale } from "../i18n";
 
 type TopBarProps = {
+  readonly copy: AppCopy["topBar"];
   readonly title: string;
   readonly actionNotice: string;
   readonly epubDisabledReason: string;
   readonly epubReady: boolean;
+  readonly locale: Locale;
   readonly savedAt: string;
-  readonly onNewChapter: () => void;
+  readonly onLocaleChange: (locale: Locale) => void;
   readonly onSaveProject: () => void;
   readonly onOpenProject: () => void;
   readonly onImportMarkdown: () => void;
@@ -14,12 +17,14 @@ type TopBarProps = {
 };
 
 export function TopBar({
+  copy,
   title,
   actionNotice,
   epubDisabledReason,
   epubReady,
+  locale,
   savedAt,
-  onNewChapter,
+  onLocaleChange,
   onSaveProject,
   onOpenProject,
   onImportMarkdown,
@@ -30,41 +35,53 @@ export function TopBar({
       <div className="brand-block">
         <div className="brand-mark">B</div>
         <div>
-          <p className="brand-name">BookSpace Lite</p>
+          <p className="brand-name">
+            <span>BookSpace Web</span>
+            <span className="brand-beta">Beta</span>
+          </p>
           <p className="project-name">{title}</p>
         </div>
       </div>
       <div className={actionNotice ? "top-status active" : "top-status"} role="status">
-        {actionNotice || `브라우저 자동저장됨 · ${savedAt}`}
+        {actionNotice || copy.autosaved(savedAt)}
       </div>
       <div className="top-actions">
-        <button className="ghost-button" type="button" aria-label="챕터" title="챕터" onClick={onNewChapter}>
-          <FilePlus2 size={16} strokeWidth={1.75} />
-          <span className="top-action-label">챕터</span>
-        </button>
-        <button className="ghost-button" type="button" aria-label="불러오기" title="불러오기" onClick={onOpenProject}>
-          <FileUp size={16} strokeWidth={1.75} />
-          <span className="top-action-label">불러오기</span>
-        </button>
-        <button className="ghost-button" type="button" aria-label="Markdown" title="Markdown" onClick={onImportMarkdown}>
-          <FileText size={16} strokeWidth={1.75} />
-          <span className="top-action-label">Markdown</span>
-        </button>
-        <button className="ghost-button" type="button" aria-label="프로젝트" title="프로젝트" onClick={onSaveProject}>
-          <Save size={16} strokeWidth={1.75} />
-          <span className="top-action-label">프로젝트</span>
-        </button>
-        <button
-          className="primary-button"
-          type="button"
-          aria-label="EPUB"
-          aria-disabled={!epubReady}
-          title={epubReady ? "EPUB 내보내기" : epubDisabledReason}
-          onClick={onExportEpub}
-        >
-          <FileDown size={16} strokeWidth={1.75} />
-          <span className="top-action-label">EPUB</span>
-        </button>
+        <label className="locale-control" title={copy.languageLabel}>
+          <Languages size={15} strokeWidth={1.8} />
+          <select
+            aria-label={copy.languageLabel}
+            className="locale-select"
+            value={locale}
+            onChange={(event) => onLocaleChange(event.currentTarget.value === "en" ? "en" : "ko")}
+          >
+            <option value="ko">{copy.localeNames.ko}</option>
+            <option value="en">{copy.localeNames.en}</option>
+          </select>
+        </label>
+        <div className="top-action-group top-import-group">
+          <button className="ghost-button" type="button" aria-label={copy.openProject} title={copy.openProject} onClick={onOpenProject}>
+            <FileUp size={16} strokeWidth={1.75} />
+          </button>
+          <button className="ghost-button" type="button" aria-label={copy.importMarkdown} title={copy.importMarkdown} onClick={onImportMarkdown}>
+            <FileText size={16} strokeWidth={1.75} />
+          </button>
+        </div>
+        <div className="top-action-group top-output-group">
+          <button className="ghost-button" type="button" aria-label={copy.project} title={copy.project} onClick={onSaveProject}>
+            <Save size={16} strokeWidth={1.75} />
+          </button>
+          <button
+            className="primary-button"
+            type="button"
+            aria-label={copy.exportEpub}
+            disabled={!epubReady}
+            title={epubReady ? copy.exportEpub : epubDisabledReason}
+            onClick={onExportEpub}
+          >
+            <FileDown size={16} strokeWidth={1.75} />
+            <span className="top-action-label">EPUB</span>
+          </button>
+        </div>
       </div>
     </header>
   );

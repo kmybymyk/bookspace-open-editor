@@ -1,30 +1,32 @@
 import { FONT_OPTIONS } from "../../domain/fonts";
 import type { DesignSettings } from "../../domain/project";
+import type { AppCopy } from "../../i18n";
 
 type DesignPanelProps = {
+  readonly copy: AppCopy["design"];
   readonly design: DesignSettings;
   readonly onDesignChange: (design: DesignSettings) => void;
 };
 
-export function DesignPanel({ design, onDesignChange }: DesignPanelProps) {
+export function DesignPanel({ copy, design, onDesignChange }: DesignPanelProps) {
   return (
     <section className="inspector-section">
-      <h2>디자인</h2>
+      <h2>{copy.sectionTitle}</h2>
       <label>
-        글꼴
+        {copy.font}
         <select
           value={design.fontFamily}
           onChange={(event) => onDesignChange({ ...design, fontFamily: event.currentTarget.value })}
         >
           {FONT_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
-              {option.label}
+              {copy.fontLabels[option.value] ?? option.label}
             </option>
           ))}
         </select>
       </label>
       <label>
-        본문 크기
+        {copy.bodySize}
         <input
           max={24}
           min={14}
@@ -34,7 +36,7 @@ export function DesignPanel({ design, onDesignChange }: DesignPanelProps) {
         />
       </label>
       <label>
-        줄간격
+        {copy.lineHeight}
         <input
           max={2.2}
           min={1.4}
@@ -45,7 +47,7 @@ export function DesignPanel({ design, onDesignChange }: DesignPanelProps) {
         />
       </label>
       <label>
-        페이지 톤
+        {copy.pageTone}
         <select
           value={design.pageTone}
           onChange={(event) => {
@@ -53,9 +55,9 @@ export function DesignPanel({ design, onDesignChange }: DesignPanelProps) {
             onDesignChange({ ...design, pageTone });
           }}
         >
-          <option value="paper">종이</option>
-          <option value="white">흰색</option>
-          <option value="warm">따뜻한 톤</option>
+          <option value="paper">{copy.pageTones.paper}</option>
+          <option value="white">{copy.pageTones.white}</option>
+          <option value="warm">{copy.pageTones.warm}</option>
         </select>
       </label>
     </section>

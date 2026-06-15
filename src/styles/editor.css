@@ -50,6 +50,11 @@
   line-height: 1.22;
 }
 
+.chapter-title-input:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 6px;
+}
+
 .editor-toolbar {
   position: sticky;
   top: 0;
@@ -112,6 +117,11 @@
 
 .writing-surface:focus {
   outline: 0;
+}
+
+.writing-surface:focus-visible {
+  outline: 2px solid #0ea5e9;
+  outline-offset: 8px;
 }
 
 .writing-surface p {

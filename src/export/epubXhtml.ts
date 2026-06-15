@@ -1,5 +1,6 @@
 import { fontOptionFor } from "../domain/fonts";
 import type { Chapter, ProjectFile } from "../domain/project";
+import { isSafeBookHref } from "../domain/safeLinks";
 
 const UNSAFE_TAGS = ["script", "style", "iframe", "object", "embed", "link", "meta"] as const;
 const ALLOWED_TAGS = ["a", "blockquote", "br", "code", "em", "h2", "h3", "hr", "li", "ol", "p", "strong", "ul"] as const;
@@ -26,11 +27,6 @@ function isUnsafeTag(tagName: string): boolean {
   return UNSAFE_TAGS.some((unsafeTag) => unsafeTag === tagName);
 }
 
-function isSafeHref(value: string): boolean {
-  const trimmed = value.trim();
-  return trimmed.startsWith("#") || trimmed.startsWith("https://") || trimmed.startsWith("http://") || trimmed.startsWith("mailto:");
-}
-
 function sanitizeElement(element: Element): void {
   const tagName = element.localName.toLowerCase();
   if (isUnsafeTag(tagName)) {
@@ -53,7 +49,7 @@ function sanitizeElement(element: Element): void {
   for (const attribute of Array.from(element.attributes)) {
     element.removeAttribute(attribute.name);
   }
-  if (tagName === "a" && href !== null && isSafeHref(href)) {
+  if (tagName === "a" && href !== null && isSafeBookHref(href)) {
     element.setAttribute("href", href.trim());
   }
 }

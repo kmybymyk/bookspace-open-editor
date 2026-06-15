@@ -81,8 +81,8 @@ export function reorderChapter(
   return [...chaptersWithoutDragged.slice(0, insertIndex), draggedChapter, ...chaptersWithoutDragged.slice(insertIndex)];
 }
 
-export function nowLabel(): string {
-  return new Intl.DateTimeFormat("ko-KR", {
+export function nowLabel(locale: "en" | "ko" = "ko"): string {
+  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "ko-KR", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",

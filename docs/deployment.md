@@ -10,6 +10,12 @@ npm run qa
 npm run build
 ```
 
+`npm run build` runs TypeScript checks, builds the Vite app, and copies the SPA
+entry HTML to:
+
+- `dist/editor/index.html`
+- `dist/en/editor/index.html`
+
 Do not deploy this repository directly to the `bookspace.work` production root.
 The root domain is owned by the BookSpace landing site. This editor must be
 published only through an explicit `/editor/` integration in the landing-site
@@ -25,6 +31,10 @@ No server-side environment variables are required.
 
 The app stores project state in the user's browser local storage and generates project/EPUB files in the browser.
 
+The current client build initializes Google Analytics with the editor
+measurement ID in `src/analytics.ts`. Analytics is client-side only and emits
+editor surface, locale, route, and tagged UI events.
+
 ## Pre-Deploy Checklist
 
 - `npm run qa` passes
@@ -32,6 +42,7 @@ The app stores project state in the user's browser local storage and generates p
 - production preview smoke passes
 - font license files are present under `public/licenses/`
 - `dist/robots.txt` and `dist/sitemap.xml` are present
+- `dist/editor/index.html` and `dist/en/editor/index.html` are present
 - `dist/` is generated from the current commit
 - the deployment target preserves the existing `bookspace.work` landing page
 - the editor is mounted at `/editor/`, `/en/editor/`, or a separate editor-only domain
@@ -62,15 +73,20 @@ Post-deploy SEO operations:
 On `bookspace.work`, verify:
 
 - root landing page still loads
-- app loads
+- `/editor/` loads the Korean editor route
+- `/en/editor/` loads the English editor route
 - editor lazy loads
 - metadata can be edited
 - body text can be edited
 - project file export works
+- EPUB import works
 - EPUB export works
 - no console errors
 - `robots.txt` and `sitemap.xml` are reachable
+- Search Console has the sitemap submitted and indexing requested for `/editor/` and `/en/editor/`
 
 ## Rollback
 
-The deployment artifact is static. Roll back by redeploying the previous known-good `dist/` artifact or previous commit.
+The deployment artifact is static. Roll back by restoring the previous
+known-good editor files in the landing-site project or by redeploying the
+previous known-good Vercel deployment for the landing site.

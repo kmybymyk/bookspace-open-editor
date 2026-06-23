@@ -53,6 +53,7 @@ Current automated coverage includes:
 - unsafe anchor href removal
 - unsupported cover rejection
 - structural EPUB package validation
+- analytics initialization and UI event tracking
 
 ## Production Preview Smoke
 
@@ -68,6 +69,7 @@ Open `http://127.0.0.1:4173/`.
 Verify:
 
 - app loads from production build
+- `/editor/` and `/en/editor/` route entry files exist after build
 - chapter title input appears
 - editor appears after lazy load
 - metadata title and author can be edited
@@ -90,6 +92,19 @@ Verify:
 - 390px mobile width has no horizontal overflow
 - top-level language selector follows browser language by default and persists manual changes
 - browser console has no errors
+
+## Production Route and SEO Smoke
+
+On the deployed `bookspace.work` site, verify:
+
+- `https://bookspace.work/` serves the existing BookSpace landing page
+- `https://bookspace.work/editor/` serves the Korean editor with canonical `https://bookspace.work/editor/`
+- `https://bookspace.work/en/editor/` serves the English editor with canonical `https://bookspace.work/en/editor/`
+- `https://bookspace.work/robots.txt` returns HTTP 200
+- `https://bookspace.work/sitemap.xml` returns HTTP 200 and includes both editor routes
+- Google Search Console has the sitemap submitted
+- Google Search Console indexing has been requested for `/editor/` and `/en/editor/`
+- browser console has no errors on both editor routes
 
 ## Manual External Checks
 

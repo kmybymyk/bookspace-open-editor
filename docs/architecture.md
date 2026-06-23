@@ -14,6 +14,7 @@ BookSpace Open Editor is a client-only React application built with Vite.
 - EPUB export
 - snapshot restore
 - browser-language locale initialization and manual locale switching
+- editor analytics initialization and tagged usage events
 
 The UI is split into three panes:
 
@@ -45,6 +46,8 @@ On mobile widths, CSS keeps the same DOM structure but visually prioritizes the 
   - Korean and English UI strings
 - `src/i18nLocale.ts`
   - browser language detection, persisted manual locale, and legacy locale key fallback
+- `src/analytics.ts`
+  - client-side Google Analytics initialization, route/locale tagging, and data-attribute event tracking
 
 ## Storage
 
@@ -107,6 +110,18 @@ EPUB generation is split by responsibility:
 - `src/export/epubValidation.ts`: structural package validation for tests
 
 `jszip` is dynamically imported so it is not part of the initial application chunk.
+
+## Routing and Deployment Shape
+
+The Vite app is client-only. The production build creates the normal
+`dist/index.html` plus SPA entry copies at `dist/editor/index.html` and
+`dist/en/editor/index.html` through `scripts/copy-spa-routes.mjs`.
+
+The standalone editor repository is not the `bookspace.work` root site in
+production. The root landing page is owned by the separate `bookspace_web`
+project, which embeds this editor build under `/editor/` and `/en/editor/`.
+The editor SEO metadata, sitemap, robots file, and noscript copy are maintained
+here, while the production root landing page remains outside this repository.
 
 ## Styling
 

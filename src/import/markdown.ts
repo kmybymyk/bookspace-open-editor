@@ -48,7 +48,7 @@ function blocksToHtml(lines: readonly string[]): string {
   return blocks.join("");
 }
 
-function splitMarkdown(raw: string): Chapter[] {
+function splitMarkdown(raw: string, fallbackTitle: string): Chapter[] {
   const lines = raw.replaceAll("\r\n", "\n").split("\n");
   const chapters: Chapter[] = [];
   let currentTitle = "";
@@ -60,7 +60,7 @@ function splitMarkdown(raw: string): Chapter[] {
     }
     chapters.push({
       id: `chapter-${chapters.length + 1}`,
-      title: currentTitle.trim() || "가져온 원고",
+      title: currentTitle.trim() || fallbackTitle,
       type: "chapter",
       contentHtml: blocksToHtml(currentLines),
     });
@@ -79,15 +79,15 @@ function splitMarkdown(raw: string): Chapter[] {
   flush();
   return chapters.length > 0 ? chapters : [{
     id: "chapter-1",
-    title: "가져온 원고",
+    title: fallbackTitle,
     type: "chapter",
     contentHtml: "<p></p>",
   }];
 }
 
-export function importMarkdownProject(raw: string): ProjectFile {
-  const starter = createStarterProject();
-  const chapters = splitMarkdown(raw);
+export function importMarkdownProject(raw: string, locale: "en" | "ko" = "ko"): ProjectFile {
+  const starter = createStarterProject(locale);
+  const chapters = splitMarkdown(raw, locale === "en" ? "Imported manuscript" : "가져온 원고");
   const firstTitle = chapters[0]?.title ?? starter.metadata.title;
   return {
     ...starter,

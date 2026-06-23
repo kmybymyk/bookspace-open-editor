@@ -33,6 +33,15 @@ describe("Browser project snapshots", () => {
     expect(restored?.chapters[0]?.title).toBe("제목 없는 페이지");
   });
 
+  it("uses the requested locale when a malformed autosave falls back to a starter project", () => {
+    window.localStorage.setItem("bookspace-web:autosave:v1", "not-json");
+
+    const restored = readAutosavedProject("en");
+
+    expect(restored?.metadata.title).toBe("Untitled book");
+    expect(restored?.metadata.language).toBe("en");
+  });
+
   it("writes the BookSpace Web project version", () => {
     const project = createStarterProject();
 
@@ -108,5 +117,16 @@ describe("Browser project snapshots", () => {
     expect(() => writeSnapshot(project, "manual")).not.toThrow();
 
     setItemSpy.mockRestore();
+  });
+
+  it("does not crash when storage reads are blocked", () => {
+    const getItemSpy = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new DOMException("storage is blocked", "SecurityError");
+    });
+
+    expect(readAutosavedProject()).toBeNull();
+    expect(readSnapshots()).toEqual([]);
+
+    getItemSpy.mockRestore();
   });
 });

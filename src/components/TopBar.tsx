@@ -1,4 +1,4 @@
-import { ArrowLeft, FileDown, FileText, FileUp, Github, Languages, Save } from "lucide-react";
+import { ArrowLeft, BookOpen, FileDown, FileText, FileUp, Github, Languages, Save } from "lucide-react";
 import type { AppCopy, Locale } from "../i18n";
 
 type TopBarProps = {
@@ -12,6 +12,7 @@ type TopBarProps = {
   readonly onLocaleChange: (locale: Locale) => void;
   readonly onSaveProject: () => void;
   readonly onOpenProject: () => void;
+  readonly onImportEpub: () => void;
   readonly onImportMarkdown: () => void;
   readonly onExportEpub: () => void;
 };
@@ -27,6 +28,7 @@ export function TopBar({
   onLocaleChange,
   onSaveProject,
   onOpenProject,
+  onImportEpub,
   onImportMarkdown,
   onExportEpub,
 }: TopBarProps) {
@@ -88,6 +90,9 @@ export function TopBar({
         <div className="top-action-group top-import-group">
           <button className="ghost-button" type="button" aria-label={copy.openProject} title={copy.openProject} onClick={onOpenProject} data-analytics-event="editor_action_click" data-analytics-param-action="open_project" data-analytics-param-placement="topbar">
             <FileUp size={16} strokeWidth={1.75} />
+          </button>
+          <button className="ghost-button" type="button" aria-label={copy.importEpub} title={copy.importEpub} onClick={onImportEpub} data-analytics-event="editor_action_click" data-analytics-param-action="import_epub" data-analytics-param-placement="topbar">
+            <BookOpen size={16} strokeWidth={1.75} />
           </button>
           <button className="ghost-button" type="button" aria-label={copy.importMarkdown} title={copy.importMarkdown} onClick={onImportMarkdown} data-analytics-event="editor_action_click" data-analytics-param-action="import_markdown" data-analytics-param-placement="topbar">
             <FileText size={16} strokeWidth={1.75} />

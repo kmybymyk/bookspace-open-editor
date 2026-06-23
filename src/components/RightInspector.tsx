@@ -9,6 +9,7 @@ import { DesignPanel } from "./inspector/DesignPanel";
 import { EpubMetadataPanel } from "./inspector/EpubMetadataPanel";
 import { ReadinessSummary } from "./inspector/ReadinessSummary";
 import { VersionsPanel } from "./inspector/VersionsPanel";
+import { WebScopePanel } from "./inspector/WebScopePanel";
 
 type InspectorTab = "epub" | "design" | "versions";
 type InspectorTabConfig = {
@@ -25,9 +26,11 @@ type RightInspectorProps = {
   readonly design: DesignSettings;
   readonly readiness: readonly ReadinessItem[];
   readonly snapshots: readonly ProjectSnapshot[];
+  readonly importSummary: string;
   readonly onMetadataChange: (metadata: BookMetadata) => void;
   readonly onDesignChange: (design: DesignSettings) => void;
   readonly onRestoreSnapshot: (snapshotId: string) => void;
+  readonly onSaveProject: () => void;
 };
 
 export function RightInspector({
@@ -37,9 +40,11 @@ export function RightInspector({
   design,
   readiness,
   snapshots,
+  importSummary,
   onMetadataChange,
   onDesignChange,
   onRestoreSnapshot,
+  onSaveProject,
 }: RightInspectorProps) {
   const [activeTab, setActiveTab] = useState<InspectorTab>("epub");
   const epubTab: InspectorTabConfig = { id: "epub", label: copy.inspector.epubTab, panelId: "inspector-panel-epub", tabId: "inspector-tab-epub" };
@@ -85,7 +90,7 @@ export function RightInspector({
   };
 
   return (
-    <aside className="right-pane">
+    <aside id="epub-panel" className="right-pane">
       <ReadinessSummary copy={copy.readiness} readiness={readiness} />
       <div className="inspector-tabs" role="tablist" aria-label={copy.inspector.tabsLabel} onKeyDown={handleTabKeyDown}>
         {tabs.map((tab) => (
@@ -111,6 +116,7 @@ export function RightInspector({
           <>
             <EpubMetadataPanel copy={copy.metadata} metadata={metadata} onMetadataChange={onMetadataChange} />
             <CoverPanel copy={copy.cover} metadata={metadata} onMetadataChange={onMetadataChange} />
+            <WebScopePanel copy={copy.webScope} importSummary={importSummary} onSaveProject={onSaveProject} />
           </>
         ) : null}
         {activeTab === "design" ? <DesignPanel copy={copy.design} design={design} onDesignChange={onDesignChange} /> : null}

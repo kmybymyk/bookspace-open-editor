@@ -80,7 +80,7 @@ export function LeftPane({
   const draggedChapter = chapters.find((chapter) => chapter.id === draggedChapterId);
 
   return (
-    <aside className="left-pane" onPointerCancel={handlePointerEnd} onPointerMove={handlePointerMove} onPointerUp={handlePointerEnd}>
+    <aside id="structure-pane" className="left-pane" onPointerCancel={handlePointerEnd} onPointerMove={handlePointerMove} onPointerUp={handlePointerEnd}>
       <div className="left-pane-top">
         <button className="empty-page-button" type="button" onClick={() => onAddChapter("chapter")} data-analytics-event="editor_chapter_add" data-analytics-param-chapter-type="chapter" data-analytics-param-placement="left_pane_top">
           <Plus size={17} strokeWidth={2.1} />

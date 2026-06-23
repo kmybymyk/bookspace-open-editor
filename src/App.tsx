@@ -2,6 +2,7 @@ import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
 import type { Chapter, ChapterKind, ProjectFile } from "./domain/project";
 import { ProjectParseError, createChapter, createStarterProject, parseProjectFile, serializeProjectFile } from "./domain/project";
 import { exportEpub } from "./export/epub";
+import { EpubImportError, importEpubProject } from "./import/epub";
 import { importMarkdownProject } from "./import/markdown";
 import { LeftPane } from "./components/LeftPane";
 import { RightInspector } from "./components/RightInspector";
@@ -16,16 +17,24 @@ import { useLocaleState } from "./useLocaleState";
 
 const MAX_PROJECT_FILE_BYTES = 5 * 1024 * 1024;
 const MAX_MARKDOWN_FILE_BYTES = 2 * 1024 * 1024;
+const MAX_EPUB_FILE_BYTES = 20 * 1024 * 1024;
 const CenterEditor = lazy(() => import("./components/CenterEditor").then((module) => ({ default: module.CenterEditor })));
+
+type EpubImportReport = {
+  readonly chapterCount: number;
+  readonly fileName: string;
+};
 
 export function App() {
   const [locale, setLocale] = useLocaleState();
-  const [project, setProject] = useState<ProjectFile>(() => readAutosavedProject() ?? createStarterProject(locale));
+  const [project, setProject] = useState<ProjectFile>(() => readAutosavedProject(locale) ?? createStarterProject(locale));
   const [activeChapterId, setActiveChapterId] = useState(project.chapters[0]?.id ?? "chapter-1");
   const [snapshots, setSnapshots] = useState<readonly ProjectSnapshot[]>(() => readSnapshots());
   const [actionNotice, setActionNotice] = useState("");
+  const [importReport, setImportReport] = useState<EpubImportReport | null>(null);
   const [savedAt, setSavedAt] = useState(nowLabel);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const epubInputRef = useRef<HTMLInputElement | null>(null);
   const markdownInputRef = useRef<HTMLInputElement | null>(null);
   const activeChapter = useMemo(
     () => project.chapters.find((chapter) => chapter.id === activeChapterId) ?? project.chapters[0],
@@ -33,8 +42,10 @@ export function App() {
   );
   const readiness = useMemo(() => epubReadiness(project), [project]);
   const copy = appCopy[locale];
+  const importSummary = importReport === null ? "" : copy.webScope.importReport(importReport.fileName, importReport.chapterCount);
   const epubReady = isEpubReady(readiness);
-  const epubDisabledReason = epubReady ? "" : `${copy.topBar.requiredPrefix}: ${formatMissingReadinessLabels(copy.readiness.labels, missingReadinessKeys(readiness))}`;
+  const missingReadiness = missingReadinessKeys(readiness);
+  const epubDisabledReason = epubReady ? "" : `${copy.topBar.requiredPrefix}: ${formatMissingReadinessLabels(copy.readiness.labels, missingReadiness)}`;
 
   useEffect(() => {
     writeAutosavedProject(project);
@@ -111,6 +122,10 @@ export function App() {
     markdownInputRef.current?.click();
   };
 
+  const handleImportEpub = () => {
+    epubInputRef.current?.click();
+  };
+
   const handleProjectSelected = (file: File | null) => {
     if (file === null) {
       return;
@@ -121,6 +136,7 @@ export function App() {
       setSnapshots(readSnapshots());
       setProject(parsed);
       setActiveChapterId(parsed.chapters[0]?.id ?? "chapter-1");
+      setImportReport(null);
       setActionNotice(copy.notices.projectLoaded(file.name));
     }).catch((error: unknown) => {
       if (error instanceof FileSizeLimitError) {
@@ -144,11 +160,12 @@ export function App() {
       return;
     }
     void readFileText(file, { maxBytes: MAX_MARKDOWN_FILE_BYTES }).then((raw) => {
-      const imported = importMarkdownProject(raw);
+      const imported = importMarkdownProject(raw, locale);
       writeSnapshot(project, "import");
       setSnapshots(readSnapshots());
       setProject(imported);
       setActiveChapterId(imported.chapters[0]?.id ?? "chapter-1");
+      setImportReport(null);
       setActionNotice(copy.notices.markdownLoaded(file.name));
     }).catch((error: unknown) => {
       if (error instanceof FileSizeLimitError) {
@@ -157,6 +174,34 @@ export function App() {
       }
       if (error instanceof Error) {
         setActionNotice(copy.notices.markdownReadError);
+        return;
+      }
+      throw error;
+    });
+  };
+
+  const handleEpubSelected = (file: File | null) => {
+    if (file === null) {
+      return;
+    }
+    if (file.size > MAX_EPUB_FILE_BYTES) {
+      setActionNotice(copy.notices.epubTooLarge);
+      return;
+    }
+    void importEpubProject(file, locale).then((imported) => {
+      writeSnapshot(project, "import");
+      setSnapshots(readSnapshots());
+      setProject(imported);
+      setActiveChapterId(imported.chapters[0]?.id ?? "chapter-1");
+      setImportReport({ chapterCount: imported.chapters.length, fileName: file.name });
+      setActionNotice(copy.notices.epubImported(file.name));
+    }).catch((error: unknown) => {
+      if (error instanceof EpubImportError) {
+        setActionNotice(copy.notices.epubImportFailed);
+        return;
+      }
+      if (error instanceof Error) {
+        setActionNotice(copy.notices.epubImportFailed);
         return;
       }
       throw error;
@@ -200,6 +245,7 @@ export function App() {
         locale={locale}
         savedAt={savedAt}
         onExportEpub={handleExportEpub}
+        onImportEpub={handleImportEpub}
         onImportMarkdown={handleImportMarkdown}
         onLocaleChange={setLocale}
         onOpenProject={handleOpenProject}
@@ -216,6 +262,16 @@ export function App() {
         }}
       />
       <input
+        ref={epubInputRef}
+        className="hidden-input"
+        accept=".epub,application/epub+zip"
+        type="file"
+        onChange={(event) => {
+          handleEpubSelected(event.currentTarget.files?.item(0) ?? null);
+          event.currentTarget.value = "";
+        }}
+      />
+      <input
         ref={markdownInputRef}
         className="hidden-input"
         accept=".md,.markdown,text/markdown,text/plain"
@@ -226,6 +282,12 @@ export function App() {
         }}
       />
       <div className="workspace-grid">
+        <nav className="mobile-workflow-summary" aria-label={copy.inspector.tabsLabel}>
+          <span>{copy.mobileSummary.structure(project.chapters.length)}</span>
+          <span>{epubReady ? copy.mobileSummary.epubReady : copy.mobileSummary.epubMissing(missingReadiness.length)}</span>
+          <a href="#structure-pane">{copy.mobileSummary.structureLink}</a>
+          <a href="#epub-panel">{copy.mobileSummary.epubLink}</a>
+        </nav>
         <LeftPane
           chapters={project.chapters}
           activeChapterId={activeChapter.id}
@@ -250,11 +312,13 @@ export function App() {
           design={project.design}
           locale={locale}
           metadata={project.metadata}
+          importSummary={importSummary}
           readiness={readiness}
           snapshots={snapshots}
           onDesignChange={(design) => setProject((current) => ({ ...current, design }))}
           onMetadataChange={(metadata) => setProject((current) => ({ ...current, metadata }))}
           onRestoreSnapshot={handleRestoreSnapshot}
+          onSaveProject={handleSaveProject}
         />
       </div>
     </div>

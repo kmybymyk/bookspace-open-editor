@@ -83,6 +83,70 @@
   font-weight: 650;
 }
 
+.web-scope-panel {
+  gap: 10px;
+}
+
+.scope-head {
+  min-width: 0;
+}
+
+.scope-note,
+.scope-columns p {
+  margin: 6px 0 0;
+  color: var(--ds-text-neutral-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.scope-details {
+  color: var(--ds-text-neutral-muted);
+  font-size: 12px;
+}
+
+.scope-details summary {
+  cursor: pointer;
+  color: var(--ds-text-neutral-secondary);
+  font-weight: 750;
+}
+
+.scope-details[open] summary {
+  margin-bottom: 10px;
+}
+
+.scope-columns {
+  display: grid;
+  gap: 10px;
+}
+
+.scope-columns > div {
+  border: 1px solid var(--ds-border-neutral-subtle);
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--ds-fill-neutral-control);
+}
+
+.scope-columns h3 {
+  margin: 0;
+  color: var(--ds-text-neutral-secondary);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.scope-columns ul {
+  display: grid;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding-left: 16px;
+  color: var(--ds-text-neutral-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.scope-cta {
+  margin-top: 0;
+}
+
 .inspector-section label {
   display: grid;
   gap: 6px;

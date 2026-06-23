@@ -28,6 +28,10 @@ function isRecoverableStorageWriteError(error: unknown): boolean {
   return error instanceof DOMException && (error.name === "QuotaExceededError" || error.name === "SecurityError");
 }
 
+function isRecoverableStorageReadError(error: unknown): boolean {
+  return error instanceof DOMException && error.name === "SecurityError";
+}
+
 function writeLocalStorage(key: string, value: string): void {
   try {
     window.localStorage.setItem(key, value);
@@ -40,10 +44,17 @@ function writeLocalStorage(key: string, value: string): void {
 }
 
 function readLocalStorageWithFallback(key: string, legacyKey: string): string | null {
-  return window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey);
+  try {
+    return window.localStorage.getItem(key) ?? window.localStorage.getItem(legacyKey);
+  } catch (error) {
+    if (isRecoverableStorageReadError(error)) {
+      return null;
+    }
+    throw error;
+  }
 }
 
-export function readAutosavedProject(): ProjectFile | null {
+export function readAutosavedProject(locale: "en" | "ko" = "ko"): ProjectFile | null {
   const raw = readLocalStorageWithFallback(AUTOSAVE_KEY, LEGACY_AUTOSAVE_KEY);
   if (raw === null) {
     return null;
@@ -53,16 +64,16 @@ export function readAutosavedProject(): ProjectFile | null {
     project = parseProjectFile(raw);
   } catch (error) {
     if (error instanceof ProjectParseError) {
-      return createStarterProject();
+      return createStarterProject(locale);
     }
     throw error;
   }
   const onlyChapter = project.chapters[0];
   if (project.chapters.length === 1 && onlyChapter?.id === "chapter-1" && onlyChapter.title === "첫 번째 챕터") {
-    return createStarterProject();
+    return createStarterProject(locale);
   }
   if (project.chapters.every((chapter) => chapter.type === "chapter")) {
-    const starter = createStarterProject();
+    const starter = createStarterProject(locale);
     return {
       ...project,
       chapters: [starter.chapters[0], starter.chapters[1], ...project.chapters, starter.chapters[4]].filter((chapter) => chapter !== undefined),

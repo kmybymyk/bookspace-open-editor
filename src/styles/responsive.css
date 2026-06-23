@@ -36,20 +36,54 @@
   .top-bar {
     grid-template-columns: 1fr;
     height: auto;
-    gap: 8px;
-    padding: 10px;
+    gap: 6px;
+    padding: 8px 10px;
   }
 
   .top-actions {
     justify-content: flex-start;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    gap: 4px;
+    padding-bottom: 2px;
+    scrollbar-width: none;
+  }
+
+  .top-actions::-webkit-scrollbar {
+    display: none;
   }
 
   .ghost-button,
   .primary-button {
     justify-content: center;
-    width: 38px;
+    width: 30px;
+    min-width: 30px;
+    height: 30px;
     padding: 0;
+  }
+
+  .locale-control {
+    height: 30px;
+    gap: 4px;
+    padding: 0 5px;
+  }
+
+  .locale-select {
+    max-width: 58px;
+    height: 28px;
+    font-size: 11px;
+  }
+
+  .top-action-group {
+    height: 30px;
+    gap: 0;
+    padding: 2px;
+  }
+
+  .top-output-group {
+    height: 30px;
+    padding: 0 1px;
   }
 
   .top-action-label {
@@ -58,6 +92,40 @@
 
   .workspace-grid {
     grid-template-columns: 1fr;
+  }
+
+  .mobile-workflow-summary {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    order: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    padding: 10px;
+    border-bottom: 1px solid var(--ds-border-neutral-subtle);
+    background: var(--ds-fill-neutral-panel);
+  }
+
+  .mobile-workflow-summary span,
+  .mobile-workflow-summary a {
+    overflow: hidden;
+    border: 1px solid var(--ds-border-neutral-subtle);
+    border-radius: 8px;
+    padding: 7px 9px;
+    color: var(--ds-text-neutral-secondary);
+    background: var(--ds-fill-neutral-card-alt);
+    font-size: 12px;
+    font-weight: 750;
+    text-align: center;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .mobile-workflow-summary a {
+    color: #d7f6ff;
+    background: color-mix(in srgb, var(--ds-color-teal-600) 34%, var(--ds-fill-neutral-control));
   }
 
   .center-pane {

@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import JSZip from "jszip";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { App } from "./App";
 import { createStarterProject, serializeProjectFile } from "./domain/project";
@@ -19,6 +20,52 @@ function fileInputTarget(file: File) {
       length: 1,
     },
   };
+}
+
+async function createUiImportEpub(): Promise<File> {
+  const zip = new JSZip();
+  zip.file("mimetype", "application/epub+zip");
+  zip.file(
+    "META-INF/container.xml",
+    `<?xml version="1.0"?>
+    <container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">
+      <rootfiles>
+        <rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml" />
+      </rootfiles>
+    </container>`,
+  );
+  zip.file(
+    "OEBPS/content.opf",
+    `<?xml version="1.0"?>
+    <package xmlns="http://www.idpf.org/2007/opf" version="3.0">
+      <metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <dc:title>EPUB QA Book</dc:title>
+        <dc:creator>EPUB QA Author</dc:creator>
+        <dc:language>en</dc:language>
+      </metadata>
+      <manifest>
+        <item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav" />
+        <item id="chapter-1" href="chapter-1.xhtml" media-type="application/xhtml+xml" />
+      </manifest>
+      <spine><itemref idref="chapter-1" /></spine>
+    </package>`,
+  );
+  zip.file(
+    "OEBPS/nav.xhtml",
+    `<?xml version="1.0"?>
+    <html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+      <body><nav epub:type="toc"><ol><li><a href="chapter-1.xhtml">Imported Chapter</a></li></ol></nav></body>
+    </html>`,
+  );
+  zip.file(
+    "OEBPS/chapter-1.xhtml",
+    `<?xml version="1.0"?>
+    <html xmlns="http://www.w3.org/1999/xhtml">
+      <body><h1>Imported Chapter</h1><p>Imported body from EPUB.</p></body>
+    </html>`,
+  );
+  const blob = await zip.generateAsync({ type: "blob", mimeType: "application/epub+zip" });
+  return new File([blob], "qa.epub", { type: "application/epub+zip" });
 }
 
 describe("BookSpace Web editor", () => {
@@ -45,6 +92,9 @@ describe("BookSpace Web editor", () => {
     expect(screen.getByRole("button", { name: "작은 소제목" })).toBeInTheDocument();
     expect(screen.getByText("책 정보")).toBeInTheDocument();
     expect(screen.getByText("EPUB 준비 상태")).toBeInTheDocument();
+    expect(screen.getByText("웹 버전 범위")).toBeInTheDocument();
+    expect(screen.getByText("가벼운 제작에 적합")).toBeInTheDocument();
+    expect(document.querySelector(".scope-details")).not.toHaveAttribute("open");
   });
 
   it("starts with front, body, and back matter like the desktop structure pane", () => {
@@ -157,6 +207,9 @@ describe("BookSpace Web editor", () => {
     expect(screen.getByRole("textbox", { name: "Body editor" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Heading" })).toBeInTheDocument();
     expect(screen.getByText("EPUB readiness")).toBeInTheDocument();
+    expect(screen.getByText("Web version scope")).toBeInTheDocument();
+    expect(screen.getByText("1 EPUB item needed")).toBeInTheDocument();
+    expect(screen.getByText("Structure")).toBeInTheDocument();
     expect(screen.getByText("Book details")).toBeInTheDocument();
     expect(screen.getByLabelText("Author")).toHaveAttribute("placeholder", "Author name shown in the EPUB");
     expect(screen.getByRole("status")).toHaveTextContent("Autosaved in browser");
@@ -312,6 +365,69 @@ describe("BookSpace Web editor", () => {
     expect(screen.getByRole("button", { name: /두 번째 장 챕터\(본문\)/i })).toBeInTheDocument();
   });
 
+  it("imports fallback Markdown content in the active interface language", async () => {
+    window.history.replaceState(null, "", "/?lang=en");
+    render(<App />);
+    const markdownInput = document.querySelector('input[accept=".md,.markdown,text/markdown,text/plain"]');
+    if (!(markdownInput instanceof HTMLInputElement)) {
+      throw new Error("Markdown 파일 입력을 찾을 수 없습니다.");
+    }
+    const file = new File(["Plain paragraph without a heading."], "plain.md", { type: "text/markdown" });
+
+    fireEvent.change(markdownInput, { target: fileInputTarget(file) });
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Markdown imported · plain.md"));
+    expect(screen.getByLabelText("Title")).toHaveValue("Imported manuscript");
+    expect(screen.getByLabelText("Language")).toHaveValue("en");
+  });
+
+  it("imports an EPUB file into an editable project", async () => {
+    render(<App />);
+    const epubInput = document.querySelector('input[accept=".epub,application/epub+zip"]');
+    if (!(epubInput instanceof HTMLInputElement)) {
+      throw new Error("EPUB 파일 입력을 찾을 수 없습니다.");
+    }
+    const file = await createUiImportEpub();
+
+    fireEvent.change(epubInput, { target: fileInputTarget(file) });
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("EPUB 가져옴 · qa.epub"));
+    expect(screen.getByText(/qa\.epub에서 1개 페이지를 가져왔습니다/)).toBeInTheDocument();
+    expect(screen.getByText("원본 CSS와 레이아웃은 보존하지 않음")).toBeInTheDocument();
+    expect(document.querySelector(".scope-details")).toHaveAttribute("open");
+    expect(screen.getByLabelText("제목")).toHaveValue("EPUB QA Book");
+    expect(screen.getByLabelText("저자")).toHaveValue("EPUB QA Author");
+    expect(screen.getByLabelText("챕터 제목")).toHaveValue("Imported Chapter");
+    expect(screen.getByRole("textbox", { name: "본문 편집기" })).toHaveTextContent("Imported body from EPUB.");
+  });
+
+  it("re-localizes the EPUB import report when the interface language changes", async () => {
+    render(<App />);
+    const epubInput = document.querySelector('input[accept=".epub,application/epub+zip"]');
+    if (!(epubInput instanceof HTMLInputElement)) {
+      throw new Error("EPUB 파일 입력을 찾을 수 없습니다.");
+    }
+    const file = await createUiImportEpub();
+
+    fireEvent.change(epubInput, { target: fileInputTarget(file) });
+
+    await waitFor(() => expect(screen.getByText(/qa\.epub에서 1개 페이지를 가져왔습니다/)).toBeInTheDocument());
+    fireEvent.change(screen.getByLabelText("화면 언어"), {
+      target: { value: "en" },
+    });
+
+    expect(screen.getByText("1 page imported from qa.epub. BookSpace Web simplifies the file around body text and core book details.")).toBeInTheDocument();
+  });
+
+  it("saves a project from the web scope panel for continuing in the app", () => {
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "프로젝트 파일 저장" }));
+
+    expect(screen.getByRole("status")).toHaveTextContent("프로젝트 저장됨");
+    expect(screen.getByRole("status")).toHaveTextContent(".bksp");
+  });
+
   it("exports an EPUB after required metadata is complete", async () => {
     render(<App />);
 
@@ -361,5 +477,18 @@ describe("BookSpace Web editor", () => {
     fireEvent.change(markdownInput, { target: fileInputTarget(file) });
 
     await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("Markdown 파일은 2MB 이하만 불러올 수 있습니다."));
+  });
+
+  it("blocks oversized EPUB files before import", async () => {
+    render(<App />);
+    const epubInput = document.querySelector('input[accept=".epub,application/epub+zip"]');
+    if (!(epubInput instanceof HTMLInputElement)) {
+      throw new Error("EPUB 파일 입력을 찾을 수 없습니다.");
+    }
+    const file = new File(["x".repeat(20 * 1024 * 1024 + 1)], "huge.epub", { type: "application/epub+zip" });
+
+    fireEvent.change(epubInput, { target: fileInputTarget(file) });
+
+    await waitFor(() => expect(screen.getByRole("status")).toHaveTextContent("EPUB 파일은 20MB 이하만 가져올 수 있습니다."));
   });
 });

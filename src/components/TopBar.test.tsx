@@ -19,6 +19,7 @@ describe("TopBar", () => {
         onLocaleChange={noop}
         onSaveProject={noop}
         onOpenProject={noop}
+        onImportEpub={noop}
         onImportMarkdown={noop}
         onExportEpub={noop}
       />,
@@ -44,6 +45,7 @@ describe("TopBar", () => {
         onLocaleChange={noop}
         onSaveProject={noop}
         onOpenProject={noop}
+        onImportEpub={noop}
         onImportMarkdown={noop}
         onExportEpub={noop}
       />,

@@ -10,6 +10,7 @@ export type AppCopy = {
     readonly autosaved: (savedAt: string) => string;
     readonly chapter: string;
     readonly exportEpub: string;
+    readonly importEpub: string;
     readonly importMarkdown: string;
     readonly languageLabel: string;
     readonly localeNames: Record<Locale, string>;
@@ -21,6 +22,9 @@ export type AppCopy = {
     readonly epubDone: (fileName: string, downloaded: boolean) => string;
     readonly epubFailed: string;
     readonly epubGenerating: string;
+    readonly epubImportFailed: string;
+    readonly epubImported: (fileName: string) => string;
+    readonly epubTooLarge: string;
     readonly markdownLoaded: (fileName: string) => string;
     readonly markdownReadError: string;
     readonly markdownTooLarge: string;
@@ -110,6 +114,24 @@ export type AppCopy = {
     readonly tabsLabel: string;
     readonly versionsTab: string;
   };
+  readonly mobileSummary: {
+    readonly epubLink: string;
+    readonly epubMissing: (count: number) => string;
+    readonly epubReady: string;
+    readonly structure: (count: number) => string;
+    readonly structureLink: string;
+  };
+  readonly webScope: {
+    readonly appCta: string;
+    readonly appDescription: string;
+    readonly appTitle: string;
+    readonly importReport: (fileName: string, chapterCount: number) => string;
+    readonly importReportFallback: string;
+    readonly limitations: readonly string[];
+    readonly sectionTitle: string;
+    readonly suitableItems: readonly string[];
+    readonly suitableTitle: string;
+  };
   readonly design: {
     readonly bodySize: string;
     readonly font: string;
@@ -145,6 +167,7 @@ export const appCopy: Record<Locale, AppCopy> = {
       autosaved: (savedAt) => `브라우저 자동저장됨 · ${savedAt}`,
       chapter: "챕터",
       exportEpub: "EPUB 내보내기",
+      importEpub: "EPUB 가져오기",
       importMarkdown: "Markdown 가져오기",
       languageLabel: "화면 언어",
       localeNames: {
@@ -159,6 +182,9 @@ export const appCopy: Record<Locale, AppCopy> = {
       epubDone: (fileName, downloaded) => downloaded ? `EPUB 생성됨 · ${fileName} 다운로드 시작` : `EPUB 생성됨 · ${fileName} · 현재 브라우저에서 다운로드를 지원하지 않습니다`,
       epubFailed: "EPUB 생성 실패 · 필수 정보와 본문을 확인하세요.",
       epubGenerating: "EPUB 파일 생성 중...",
+      epubImportFailed: "EPUB 파일을 가져올 수 없습니다.",
+      epubImported: (fileName) => `EPUB 가져옴 · ${fileName}`,
+      epubTooLarge: "EPUB 파일은 20MB 이하만 가져올 수 있습니다.",
       markdownLoaded: (fileName) => `Markdown 불러옴 · ${fileName}`,
       markdownReadError: "Markdown 파일을 읽을 수 없습니다.",
       markdownTooLarge: "Markdown 파일은 2MB 이하만 불러올 수 있습니다.",
@@ -298,6 +324,24 @@ export const appCopy: Record<Locale, AppCopy> = {
       tabsLabel: "오른쪽 패널",
       versionsTab: "버전",
     },
+    mobileSummary: {
+      epubLink: "EPUB 설정",
+      epubMissing: (count) => `EPUB ${count}개 필요`,
+      epubReady: "EPUB 준비 완료",
+      structure: (count) => `구조 ${count}페이지`,
+      structureLink: "구조 보기",
+    },
+    webScope: {
+      appCta: "프로젝트 파일 저장",
+      appDescription: "긴 원고, 이미지/원본 스타일 보존, 최종 출판 검수는 BookSpace 앱에서 이어서 작업하는 흐름이 더 적합합니다.",
+      appTitle: "본격 작업은 앱에서",
+      importReport: (fileName, chapterCount) => `${fileName}에서 ${chapterCount}개 페이지를 가져왔습니다. 본문 텍스트와 기본 책 정보 중심으로 단순화됩니다.`,
+      importReportFallback: "EPUB을 가져오면 본문 텍스트와 기본 책 정보 중심으로 BookSpace Web 프로젝트로 변환됩니다.",
+      limitations: ["원본 CSS와 레이아웃은 보존하지 않음", "본문 이미지와 임베디드 폰트는 단순화", "DRM/고정 레이아웃 EPUB은 대상 아님"],
+      sectionTitle: "웹 버전 범위",
+      suitableItems: ["짧은 원고 초안 작성", "텍스트 중심 EPUB 빠른 수정", "기본 메타데이터와 표지 설정", "간단한 EPUB 내보내기"],
+      suitableTitle: "가벼운 제작에 적합",
+    },
     design: {
       bodySize: "본문 크기",
       font: "글꼴",
@@ -342,6 +386,7 @@ export const appCopy: Record<Locale, AppCopy> = {
       autosaved: (savedAt) => `Autosaved in browser · ${savedAt}`,
       chapter: "Chapter",
       exportEpub: "Export EPUB",
+      importEpub: "Import EPUB",
       importMarkdown: "Import Markdown",
       languageLabel: "Interface language",
       localeNames: {
@@ -356,6 +401,9 @@ export const appCopy: Record<Locale, AppCopy> = {
       epubDone: (fileName, downloaded) => downloaded ? `EPUB created · ${fileName} download started` : `EPUB created · ${fileName} · downloads are not supported in this browser`,
       epubFailed: "EPUB export failed · check required details and body content.",
       epubGenerating: "Creating EPUB...",
+      epubImportFailed: "EPUB file could not be imported.",
+      epubImported: (fileName) => `EPUB imported · ${fileName}`,
+      epubTooLarge: "EPUB files must be 20MB or smaller.",
       markdownLoaded: (fileName) => `Markdown imported · ${fileName}`,
       markdownReadError: "Markdown file could not be read.",
       markdownTooLarge: "Markdown files must be 2MB or smaller.",
@@ -494,6 +542,24 @@ export const appCopy: Record<Locale, AppCopy> = {
       epubTab: "EPUB",
       tabsLabel: "Right panel",
       versionsTab: "Versions",
+    },
+    mobileSummary: {
+      epubLink: "EPUB settings",
+      epubMissing: (count) => `${count} EPUB ${count === 1 ? "item" : "items"} needed`,
+      epubReady: "EPUB ready",
+      structure: (count) => `${count} ${count === 1 ? "page" : "pages"}`,
+      structureLink: "Structure",
+    },
+    webScope: {
+      appCta: "Save project file",
+      appDescription: "Long manuscripts, image/style preservation, and final publishing checks are better continued in the BookSpace desktop app.",
+      appTitle: "Use the app for serious work",
+      importReport: (fileName, chapterCount) => `${chapterCount} ${chapterCount === 1 ? "page" : "pages"} imported from ${fileName}. BookSpace Web simplifies the file around body text and core book details.`,
+      importReportFallback: "Imported EPUB files are converted into a BookSpace Web project around body text and core book details.",
+      limitations: ["Original CSS and layout are not preserved", "Body images and embedded fonts are simplified", "DRM and fixed-layout EPUBs are out of scope"],
+      sectionTitle: "Web version scope",
+      suitableItems: ["Quick short-form drafting", "Text-first EPUB revisions", "Basic metadata and cover setup", "Simple EPUB export"],
+      suitableTitle: "Best for lightweight creation",
     },
     design: {
       bodySize: "Body size",

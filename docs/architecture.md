@@ -10,6 +10,7 @@ BookSpace Open Editor is a client-only React application built with Vite.
 - active chapter selection
 - project import/export
 - Markdown import
+- EPUB import
 - EPUB export
 - snapshot restore
 - browser-language locale initialization and manual locale switching
@@ -18,7 +19,7 @@ The UI is split into three panes:
 
 - `LeftPane`: book structure, page type changes, delete, drag reorder
 - `CenterEditor`: TipTap editor and chapter title editing
-- `RightInspector`: EPUB metadata, cover image, design settings, local versions
+- `RightInspector`: EPUB readiness, web-version scope guidance, metadata, cover image, design settings, local versions
 
 On mobile widths, CSS keeps the same DOM structure but visually prioritizes the editor pane before the structure and inspector panes. This keeps the primary writing workflow reachable first while preserving the desktop-style structure and EPUB controls below it.
 
@@ -82,6 +83,19 @@ Pasted HTML is sanitized before insertion to remove script/style metadata, inlin
 The structure pane keeps row actions compact with structure, drag, and delete controls. Pointer drag reorder uses a visible drop indicator and drag preview.
 
 The right inspector uses tablist/tab/tabpanel semantics with roving tab focus and arrow/Home/End keyboard handling. Disabled EPUB export uses the native `disabled` state until required metadata is complete.
+
+The EPUB tab also explains the intentional web/app split after the core metadata and cover controls. BookSpace Web is positioned for lightweight, text-first EPUB creation, while the project-file save CTA gives users a clear path to continue serious publishing work in the desktop app. The detailed scope guidance stays collapsed by default and expands after an EPUB import report is available.
+
+Mobile layouts add a compact workflow summary above the editor so users can see page count, EPUB readiness, and anchors to structure and EPUB settings without scrolling through the full pane stack first.
+
+## EPUB Import
+
+EPUB import is a browser-side conversion step from a reflowable EPUB package into `ProjectFile`.
+
+- `src/import/epub.ts`: ZIP loading, container/OPF/nav parsing, spine XHTML conversion, imported HTML sanitization, and cover extraction
+- `src/App.tsx`: upload size guard, snapshot before import, imported project replacement, and status feedback
+
+The importer intentionally maps EPUB content into the BookSpace editing model. It does not attempt lossless EPUB round-tripping, fixed-layout rendering, DRM handling, embedded font preservation, or full CSS/resource preservation.
 
 ## EPUB Export
 

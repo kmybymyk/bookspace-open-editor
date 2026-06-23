@@ -24,7 +24,28 @@ The app stores project state in the user's browser local storage and generates p
 - `npm audit --audit-level=moderate` passes
 - production preview smoke passes
 - font license files are present under `public/licenses/`
+- `dist/robots.txt` and `dist/sitemap.xml` are present
 - `dist/` is generated from the current commit
+
+## Google Organic Search Checklist
+
+The editor is intended to rank for lightweight EPUB editor searches such as "online EPUB editor", "free EPUB editor", "EPUB 웹 에디터", and "무료 EPUB 에디터" without overstating the web version's scope.
+
+Code-level SEO assets:
+
+- `index.html` includes title, description, canonical, hreflang, Open Graph, Twitter card, and `SoftwareApplication` JSON-LD metadata.
+- `public/robots.txt` allows crawling and points crawlers to the sitemap.
+- `public/sitemap.xml` lists the Korean and English editor URLs with reciprocal hreflang links.
+- `noscript` content provides a crawlable summary for browsers or crawlers without JavaScript execution.
+
+Post-deploy SEO operations:
+
+- Confirm `https://bookspace.work/editor/` returns the built app with the canonical URL set to itself.
+- Confirm `https://bookspace.work/en/editor/` resolves and serves the English alternate route or redirects consistently with the published hreflang policy.
+- Confirm `https://bookspace.work/robots.txt` and `https://bookspace.work/sitemap.xml` return HTTP 200.
+- Submit `https://bookspace.work/sitemap.xml` in Google Search Console.
+- Request indexing for `https://bookspace.work/editor/` and `https://bookspace.work/en/editor/`.
+- Inspect Search Console queries after indexing and adjust copy only when real query data shows a mismatch.
 
 ## Post-Deploy Smoke
 
@@ -37,6 +58,7 @@ On `bookspace.work`, verify:
 - project file export works
 - EPUB export works
 - no console errors
+- `robots.txt` and `sitemap.xml` are reachable
 
 ## Rollback
 

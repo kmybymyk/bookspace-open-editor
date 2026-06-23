@@ -4,6 +4,10 @@
   height: calc(100vh - 52px);
 }
 
+.mobile-workflow-summary {
+  display: none;
+}
+
 .left-pane,
 .right-pane {
   overflow: auto;

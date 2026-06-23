@@ -7,12 +7,12 @@
       content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
     />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BookSpace Open Editor - 오픈소스 EPUB 웹 에디터</title>
+    <title>BookSpace Open Editor - 무료 온라인 EPUB 에디터</title>
     <meta
       name="description"
-      content="BookSpace Open Editor는 설치 없이 브라우저에서 전자책 원고를 구조화하고 EPUB 초안을 만들고 내보내는 오픈소스 EPUB 웹 에디터입니다."
+      content="BookSpace Open Editor는 설치 없이 브라우저에서 EPUB을 가져오고, 전자책 원고를 구조화하고, EPUB 초안을 내보내는 무료 온라인 EPUB 에디터입니다."
     />
-    <meta name="keywords" content="BookSpace Open Editor, EPUB editor, EPUB 웹 에디터, open-source EPUB editor, web EPUB editor, ebook editor, 전자책 편집기, 전자책 만들기, 브라우저 EPUB" />
+    <meta name="keywords" content="BookSpace Open Editor, EPUB editor, online EPUB editor, free EPUB editor, EPUB 웹 에디터, 무료 EPUB 에디터, open-source EPUB editor, web EPUB editor, ebook editor, 전자책 편집기, 전자책 만들기, 브라우저 EPUB" />
     <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1" />
     <meta name="author" content="BookSpace" />
     <meta name="theme-color" content="#1c1d22" />
@@ -20,14 +20,14 @@
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:locale:alternate" content="en_US" />
     <meta property="og:site_name" content="BookSpace" />
-    <meta property="og:title" content="BookSpace Open Editor - 오픈소스 EPUB 웹 에디터" />
-    <meta property="og:description" content="설치 없이 브라우저에서 전자책 원고를 구조화하고 EPUB 초안을 만들고 내보내는 open-source EPUB editor입니다." />
+    <meta property="og:title" content="BookSpace Open Editor - 무료 온라인 EPUB 에디터" />
+    <meta property="og:description" content="설치 없이 브라우저에서 EPUB을 가져오고, 전자책 원고를 구조화하고, EPUB 초안을 내보내는 open-source online EPUB editor입니다." />
     <meta property="og:image" content="https://bookspace.work/public/og/og_kr.png" />
     <meta property="og:image:alt" content="BookSpace Web 에디터 화면" />
     <meta property="og:url" content="https://bookspace.work/editor/" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="BookSpace Open Editor - 오픈소스 EPUB 웹 에디터" />
-    <meta name="twitter:description" content="설치 없이 브라우저에서 전자책 원고를 구조화하고 EPUB 초안을 만들고 내보내는 open-source EPUB editor입니다." />
+    <meta name="twitter:title" content="BookSpace Open Editor - 무료 온라인 EPUB 에디터" />
+    <meta name="twitter:description" content="설치 없이 브라우저에서 EPUB을 가져오고, 전자책 원고를 구조화하고, EPUB 초안을 내보내는 open-source online EPUB editor입니다." />
     <meta name="twitter:image" content="https://bookspace.work/public/og/og_kr.png" />
     <meta name="twitter:image:alt" content="BookSpace Web 에디터 화면" />
     <link rel="canonical" href="https://bookspace.work/editor/" />
@@ -41,17 +41,18 @@
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "BookSpace Web",
-        "alternateName": "Open-source EPUB Web Editor",
+        "alternateName": ["Open-source EPUB Web Editor", "Free Online EPUB Editor", "무료 온라인 EPUB 에디터"],
         "applicationCategory": "DesignApplication",
         "operatingSystem": "Web browser",
         "browserRequirements": "Requires JavaScript and a modern web browser",
-        "description": "설치 없이 브라우저에서 전자책 원고를 구조화하고 EPUB 초안을 만들고 내보내는 오픈소스 EPUB 웹 에디터입니다.",
+        "description": "설치 없이 브라우저에서 EPUB을 가져오고, 전자책 원고를 구조화하고, EPUB 초안을 내보내는 무료 온라인 EPUB 에디터입니다.",
         "url": "https://bookspace.work/editor/",
         "image": "https://bookspace.work/public/og/og_kr.png",
         "sameAs": ["https://github.com/kmybymyk/bookspace-open-editor"],
         "inLanguage": ["ko-KR", "en-US"],
         "featureList": [
           "브라우저 기반 EPUB 초안 작성",
+          "EPUB 가져오기",
           "전자책 원고 구조화",
           "로컬 자동 저장",
           "EPUB 내보내기"
@@ -78,10 +79,10 @@
   <body>
     <noscript>
       <main>
-        <h1>BookSpace Open Editor - 오픈소스 EPUB 웹 에디터</h1>
+        <h1>BookSpace Open Editor - 무료 온라인 EPUB 에디터</h1>
         <p>
-          BookSpace Open Editor는 설치 없이 브라우저에서 전자책 원고를 구조화하고 EPUB 초안을 만들고 내보내는
-          오픈소스 EPUB 웹 에디터입니다.
+          BookSpace Open Editor는 설치 없이 브라우저에서 EPUB을 가져오고, 전자책 원고를 구조화하고, EPUB 초안을
+          내보내는 무료 온라인 EPUB 에디터입니다.
         </p>
         <p>웹 버전을 사용하려면 JavaScript를 켜주세요. 데스크톱 버전은 https://bookspace.work/ 에서 받을 수 있습니다.</p>
       </main>

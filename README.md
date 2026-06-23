@@ -4,7 +4,7 @@
 
 ## 한국어
 
-BookSpace Open Editor는 오픈소스 EPUB 웹 에디터입니다. 데스크톱 BookSpace의 구조 편집 흐름을 브라우저에서 가볍게 사용할 수 있도록 만든 React/Vite 기반 EPUB editor입니다.
+BookSpace Open Editor는 BookSpace가 만드는 오픈소스 EPUB 웹 에디터입니다. 데스크톱 BookSpace의 구조 편집 흐름을 브라우저에서 가볍게 사용할 수 있도록 만든 React/Vite 기반 EPUB editor입니다.
 
 브라우저 로컬 저장소에 프로젝트를 자동 저장하고, `.bksp` 프로젝트 파일과 EPUB 파일을 내보냅니다.
 
@@ -131,7 +131,7 @@ BookSpace Open Editor는 Apache License 2.0으로 배포됩니다. [LICENSE](LIC
 
 ## English
 
-BookSpace Open Editor is an open-source EPUB web editor. It is a React/Vite EPUB editor that brings the structural editing flow of the desktop BookSpace app to a lightweight browser-based workspace.
+BookSpace Open Editor is an open-source EPUB web editor by BookSpace. It is a React/Vite EPUB editor that brings the structural editing flow of the desktop BookSpace app to a lightweight browser-based workspace.
 
 Projects are autosaved in browser local storage, and the editor can export `.bksp` project files and EPUB files.
 

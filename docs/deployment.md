@@ -10,7 +10,14 @@ npm run qa
 npm run build
 ```
 
-Deploy the generated `dist/` directory to `bookspace.work`.
+Do not deploy this repository directly to the `bookspace.work` production root.
+The root domain is owned by the BookSpace landing site. This editor must be
+published only through an explicit `/editor/` integration in the landing-site
+project or through a separate Vercel project/domain that is linked from the
+landing site.
+
+Before any production deploy, verify the target project is not the landing-site
+production deployment for `bookspace.work`.
 
 ## Environment
 
@@ -26,6 +33,8 @@ The app stores project state in the user's browser local storage and generates p
 - font license files are present under `public/licenses/`
 - `dist/robots.txt` and `dist/sitemap.xml` are present
 - `dist/` is generated from the current commit
+- the deployment target preserves the existing `bookspace.work` landing page
+- the editor is mounted at `/editor/`, `/en/editor/`, or a separate editor-only domain
 
 ## Google Organic Search Checklist
 
@@ -40,6 +49,7 @@ Code-level SEO assets:
 
 Post-deploy SEO operations:
 
+- Confirm `https://bookspace.work/` still serves the BookSpace landing page, not the editor shell.
 - Confirm `https://bookspace.work/editor/` returns the built app with the canonical URL set to itself.
 - Confirm `https://bookspace.work/en/editor/` resolves and serves the English alternate route or redirects consistently with the published hreflang policy.
 - Confirm `https://bookspace.work/robots.txt` and `https://bookspace.work/sitemap.xml` return HTTP 200.
@@ -51,6 +61,7 @@ Post-deploy SEO operations:
 
 On `bookspace.work`, verify:
 
+- root landing page still loads
 - app loads
 - editor lazy loads
 - metadata can be edited

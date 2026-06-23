@@ -95,15 +95,15 @@ npm run preview -- --host 127.0.0.1 --port 4173
 
 ### 배포
 
-정적 Vite 앱이지만 이 저장소를 `bookspace.work` 루트에 직접 배포하지 않습니다.
-운영 환경에서는 `bookspace_web` 랜딩 프로젝트가 루트 도메인을 소유하고, 이 에디터의 빌드 결과를 `/editor/`와 `/en/editor/` 경로에 임베드합니다.
+정적 Vite 앱이지만 BookSpace 운영 환경에서는 이 저장소를 `bookspace.work` 루트에 직접 배포하지 않습니다.
+공개 사이트의 루트 페이지는 별도 사이트에서 관리하고, 이 에디터 빌드 결과만 `/editor/`와 `/en/editor/` 경로에 임베드합니다.
 
 `npm run build`는 `dist/index.html`과 함께 `dist/editor/index.html`, `dist/en/editor/index.html` SPA 진입점 사본을 생성합니다.
 자세한 절차와 금지 사항은 [Deployment](docs/deployment.md)를 따르세요.
 
 배포 전 확인 항목:
 
-- `bookspace.work` 루트가 기존 랜딩 페이지로 유지됨
+- 공개 사이트 루트가 기존 BookSpace 랜딩 페이지로 유지됨
 - `/editor/`, `/en/editor/`가 에디터를 제공함
 - 새 챕터 생성
 - 본문 편집과 붙여넣기 정리
@@ -238,15 +238,15 @@ Browser smoke checks:
 
 ### Deploy
 
-This is a static Vite app, but this repository must not be deployed directly to the `bookspace.work` root.
-In production, the `bookspace_web` landing project owns the root domain and embeds this editor build under `/editor/` and `/en/editor/`.
+This is a static Vite app, but BookSpace production must not deploy this repository directly to the `bookspace.work` root.
+The public site root is managed separately, and only this editor build is embedded under `/editor/` and `/en/editor/`.
 
 `npm run build` creates `dist/index.html` plus SPA entry copies at `dist/editor/index.html` and `dist/en/editor/index.html`.
 Follow [Deployment](docs/deployment.md) for the exact production flow and guardrails.
 
 Pre-deploy checks:
 
-- `bookspace.work` root still serves the existing landing page
+- the public site root still serves the existing BookSpace landing page
 - `/editor/` and `/en/editor/` serve the editor
 - Create a new chapter
 - Edit body content and verify paste cleanup

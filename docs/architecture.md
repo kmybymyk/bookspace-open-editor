@@ -117,11 +117,11 @@ The Vite app is client-only. The production build creates the normal
 `dist/index.html` plus SPA entry copies at `dist/editor/index.html` and
 `dist/en/editor/index.html` through `scripts/copy-spa-routes.mjs`.
 
-The standalone editor repository is not the `bookspace.work` root site in
-production. The root landing page is owned by the separate `bookspace_web`
-project, which embeds this editor build under `/editor/` and `/en/editor/`.
-The editor SEO metadata, sitemap, robots file, and noscript copy are maintained
-here, while the production root landing page remains outside this repository.
+This standalone editor repository is not the public site root in BookSpace
+production. The public site root is managed separately and embeds this editor
+build under `/editor/` and `/en/editor/`. The editor SEO metadata, sitemap,
+robots file, and noscript copy are maintained here, while the production root
+landing page remains outside this repository.
 
 ## Styling
 

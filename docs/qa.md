@@ -95,9 +95,9 @@ Verify:
 
 ## Production Route and SEO Smoke
 
-On the deployed `bookspace.work` site, verify:
+On the deployed BookSpace site, verify:
 
-- `https://bookspace.work/` serves the existing BookSpace landing page
+- `https://bookspace.work/` still serves the public BookSpace page, not the editor shell
 - `https://bookspace.work/editor/` serves the Korean editor with canonical `https://bookspace.work/editor/`
 - `https://bookspace.work/en/editor/` serves the English editor with canonical `https://bookspace.work/en/editor/`
 - `https://bookspace.work/robots.txt` returns HTTP 200

@@ -17,13 +17,13 @@ entry HTML to:
 - `dist/en/editor/index.html`
 
 Do not deploy this repository directly to the `bookspace.work` production root.
-The root domain is owned by the BookSpace landing site. This editor must be
-published only through an explicit `/editor/` integration in the landing-site
-project or through a separate Vercel project/domain that is linked from the
-landing site.
+This repository only owns the open editor app. The public site root is managed
+separately, so the editor must be published only through an explicit `/editor/`
+integration or through a separate editor-only domain linked from the public
+site.
 
-Before any production deploy, verify the target project is not the landing-site
-production deployment for `bookspace.work`.
+Before any production deploy, verify the target does not replace the public
+site root for `bookspace.work`.
 
 ## Environment
 
@@ -44,7 +44,7 @@ editor surface, locale, route, and tagged UI events.
 - `dist/robots.txt` and `dist/sitemap.xml` are present
 - `dist/editor/index.html` and `dist/en/editor/index.html` are present
 - `dist/` is generated from the current commit
-- the deployment target preserves the existing `bookspace.work` landing page
+- the deployment target preserves the existing public site root
 - the editor is mounted at `/editor/`, `/en/editor/`, or a separate editor-only domain
 
 ## Google Organic Search Checklist
@@ -60,7 +60,7 @@ Code-level SEO assets:
 
 Post-deploy SEO operations:
 
-- Confirm `https://bookspace.work/` still serves the BookSpace landing page, not the editor shell.
+- Confirm `https://bookspace.work/` still serves the public BookSpace page, not the editor shell.
 - Confirm `https://bookspace.work/editor/` returns the built app with the canonical URL set to itself.
 - Confirm `https://bookspace.work/en/editor/` resolves and serves the English alternate route or redirects consistently with the published hreflang policy.
 - Confirm `https://bookspace.work/robots.txt` and `https://bookspace.work/sitemap.xml` return HTTP 200.
@@ -72,7 +72,7 @@ Post-deploy SEO operations:
 
 On `bookspace.work`, verify:
 
-- root landing page still loads
+- public site root still loads
 - `/editor/` loads the Korean editor route
 - `/en/editor/` loads the English editor route
 - editor lazy loads
@@ -88,5 +88,5 @@ On `bookspace.work`, verify:
 ## Rollback
 
 The deployment artifact is static. Roll back by restoring the previous
-known-good editor files in the landing-site project or by redeploying the
-previous known-good Vercel deployment for the landing site.
+known-good editor files in the host site or by redeploying the previous
+known-good deployment for the host site.

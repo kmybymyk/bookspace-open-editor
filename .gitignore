@@ -4,3 +4,4 @@ dist/
 *.local
 .omo/
 tmp/
+.vercel
